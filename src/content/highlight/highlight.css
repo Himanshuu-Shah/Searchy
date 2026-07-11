@@ -1,0 +1,9 @@
+::highlight(all-results) {
+    background-color: yellow;
+    color: black;
+}
+
+::highlight(current-result) {
+    background-color: greenyellow;
+    color: black;
+}

@@ -1,0 +1,45 @@
+import { MessageType, type ExtensionMessage } from "../shared/messages";
+import { searchText } from "./search/searchText";
+import { highlight } from "./highlight/highlight";
+import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch";
+import type { SearchMatch } from "./search/types";
+import { scrollToMatch } from "./navigation/scrollToMatch";
+import "./highlight/highlight.css"
+
+console.log("Content script injected.")
+
+let matches: SearchMatch[] = []
+let currentIndex = -1
+
+chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
+    switch (message.type) {
+        case MessageType.SEARCH:
+            matches = searchText(message.query)
+            currentIndex = matches.length > 0 ? 0 : -1
+
+            highlight(matches)
+            highlightCurrentMatch(currentIndex >= 0 ? matches[currentIndex] : null)
+            scrollToMatch(matches[currentIndex])
+
+            break
+
+        case MessageType.NEXT_RESULT:
+            if (matches.length === 0) break;
+
+            currentIndex = (currentIndex + 1) % matches.length
+            highlightCurrentMatch(matches[currentIndex])
+            scrollToMatch(matches[currentIndex])
+
+            break
+
+        case MessageType.PREVIOUS_RESULT:
+            if (matches.length === 0) break;
+
+            currentIndex = ((currentIndex - 1) + matches.length) % matches.length
+            highlightCurrentMatch(matches[currentIndex])
+            scrollToMatch(matches[currentIndex])
+
+            break
+        
+    }
+});
