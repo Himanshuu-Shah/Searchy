@@ -1,5 +1,5 @@
 import type { SearchOptions } from "../../shared/messages/search"
-import { findMatches } from "./findmatch"
+import { findMatches } from "./findmatches"
 import { type SearchMatch } from "./types"
 
 export function searchText(query: string, options: SearchOptions): SearchMatch[] {
@@ -20,7 +20,7 @@ export function searchText(query: string, options: SearchOptions): SearchMatch[]
     while (node) {
         const text = node.textContent || ""
         const matches = findMatches(text, query, options)
-        
+
         for (const match of matches) {
             results.push({
                 ...match,

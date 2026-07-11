@@ -11,7 +11,6 @@ export function highlightCurrentMatch(match: SearchMatch | null) {
     CSS.highlights.delete("current-result")
 
     if (!match) {
-        console.log("here")
         return
     }
 

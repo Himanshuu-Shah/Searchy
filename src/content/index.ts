@@ -16,11 +16,15 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
         case MessageType.SEARCH:
             matches = searchText(message.query, message.options)
             currentIndex = matches.length > 0 ? 0 : -1
-            console.log()
 
+            const currentMatch =
+            currentIndex >= 0
+                ? matches[currentIndex]
+                : null
+            
             highlight(matches)
-            highlightCurrentMatch(currentIndex >= 0 ? matches[currentIndex] : null)
-            scrollToMatch(matches[currentIndex])
+            highlightCurrentMatch(currentMatch)
+            scrollToMatch(currentMatch)
 
             break
 

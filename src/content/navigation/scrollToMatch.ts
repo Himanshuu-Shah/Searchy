@@ -1,7 +1,11 @@
 import { createRange } from "../dom/createRange";
 import { type SearchMatch } from "../search/types";
 
-export function scrollToMatch(match : SearchMatch) {
+export function scrollToMatch(match : SearchMatch | null) {
+
+    if (!match) {
+        return
+    }
 
     const range = createRange(match)
 
