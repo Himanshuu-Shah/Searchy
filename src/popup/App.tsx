@@ -35,7 +35,9 @@ function App() {
   }
 
   function updateSearchOption(property: keyof SearchOptions, value: boolean) {
-    setOptions((prevOption) => ({
+
+    setOptions((prevOption) => (
+      {
       ...prevOption,
       [property]: value
     }))

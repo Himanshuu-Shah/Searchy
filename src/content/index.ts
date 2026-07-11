@@ -14,9 +14,9 @@ let currentIndex = -1
 chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
     switch (message.type) {
         case MessageType.SEARCH:
-            matches = searchText(message.query)
+            matches = searchText(message.query, message.options)
             currentIndex = matches.length > 0 ? 0 : -1
-            console.log(matches)
+            console.log()
 
             highlight(matches)
             highlightCurrentMatch(currentIndex >= 0 ? matches[currentIndex] : null)
