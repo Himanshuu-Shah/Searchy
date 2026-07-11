@@ -1,4 +1,4 @@
-import { MessageType, type ExtensionMessage } from "../shared/messages";
+import { MessageType, type ExtensionMessage } from "../shared/messages/messages";
 import { searchText } from "./search/searchText";
 import { highlight } from "./highlight/highlight";
 import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch";
@@ -16,6 +16,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
         case MessageType.SEARCH:
             matches = searchText(message.query)
             currentIndex = matches.length > 0 ? 0 : -1
+            console.log(matches)
 
             highlight(matches)
             highlightCurrentMatch(currentIndex >= 0 ? matches[currentIndex] : null)

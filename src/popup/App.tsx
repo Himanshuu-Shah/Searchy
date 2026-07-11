@@ -1,12 +1,14 @@
-import { MessageType, type SearchMessage, type NextResult, type PreviousResult } from '../shared/messages'
+import { MessageType, type SearchMessage, type NextResult, type PreviousResult } from '../shared/messages/messages'
 import { useState, type SubmitEvent } from 'react'
 import { sendMessage } from './messaging'
 import './App.css'
+import {type SearchOptions, DEFAULT_SEARCH_OPTIONS } from '../shared/messages/search'
 
-async function searchMessage(query: string) {
+async function searchMessage(query: string, options: SearchOptions) {
   await sendMessage({
     type: MessageType.SEARCH,
-    query
+    query,
+    options
   } satisfies SearchMessage)
 }
 
@@ -25,10 +27,18 @@ async function prevMessage() {
 function App() {
 
   const [input, setInput] = useState("")
+  const [options, setOptions] = useState<SearchOptions>(DEFAULT_SEARCH_OPTIONS)
 
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
-    searchMessage(input)
+    searchMessage(input, options)
+  }
+
+  function updateSearchOption(property: keyof SearchOptions, value: boolean) {
+    setOptions((prevOption) => ({
+      ...prevOption,
+      [property]: value
+    }))
   }
   
   return (
@@ -38,6 +48,30 @@ function App() {
       <p>Browser extension loaded successfully.</p>
       <form onSubmit={handleSubmit}>
         <input type='text' placeholder='Search' value={input} onChange={e => setInput(e.target.value)}/>
+        <label>
+          <input
+            type='checkbox'
+            checked={options.caseSensitive}
+            onChange={e => updateSearchOption('caseSensitive', e.target.checked)}
+            />
+            Case Sensitive
+        </label>
+        <label>
+          <input
+            type='checkbox'
+            checked={options.wholeWord}
+            onChange={e => updateSearchOption('wholeWord', e.target.checked)}
+            />
+            Whole Word
+        </label>
+        <label>
+          <input
+            type='checkbox'
+            checked={options.regex}
+            onChange={e => updateSearchOption('regex', e.target.checked)}
+            />
+            Regex
+        </label>
         <button type='submit'>Search</button>
       </form>
       <button onClick={nextMessage}>Next</button>

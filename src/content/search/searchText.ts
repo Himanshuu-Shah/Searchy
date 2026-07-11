@@ -1,3 +1,4 @@
+import { findMatches } from "./findmatch"
 import { type SearchMatch } from "./types"
 
 export function searchText(query: string): SearchMatch[] {
@@ -17,14 +18,13 @@ export function searchText(query: string): SearchMatch[] {
 
     while (node) {
         const text = node.textContent || ""
-        const start = text.indexOf(query)
-
-        if (start !== -1) {
+        const matches = findMatches(text, query)
+        
+        for (const match of matches) {
             results.push({
-                node: node as Text,
-                start,
-                end: start + query.length,
-            });
+                ...match,
+                node: node as Text
+            })
         }
 
         node = walker.nextNode()

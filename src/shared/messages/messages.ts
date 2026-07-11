@@ -1,3 +1,5 @@
+import type { SearchOptions } from "./search";
+
 export const MessageType = {
     SEARCH: "SEARCH",
     NEXT_RESULT: "NEXT_RESULT",
@@ -8,6 +10,7 @@ export const MessageType = {
 export interface SearchMessage {
     type: typeof MessageType.SEARCH;
     query: string;
+    options: SearchOptions
 }
 
 export interface NextResult {

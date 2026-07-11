@@ -1,4 +1,4 @@
-import { type ExtensionMessage } from "../shared/messages";
+import { type ExtensionMessage } from "../shared/messages/messages";
 
 export async function sendMessage(message: ExtensionMessage) {
     const [tab] = await chrome.tabs.query({
