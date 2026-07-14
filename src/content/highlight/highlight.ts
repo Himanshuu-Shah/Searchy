@@ -1,22 +1,21 @@
-import { createRange } from "../dom/createRange";
-import { type SearchMatch } from "../search/types";
+import { createRange } from "../dom/createRange"
+import { type SearchMatch } from "../search/match"
 
-export function highlight(matches: SearchMatch[]) :void {
+export function highlight(matches: SearchMatch[]): void {
+	if (!("highlights" in CSS)) {
+		console.warn("CSS highlight not provided by the broswer")
+		return
+	}
 
-    if (!("highlights" in CSS)) {
-        console.warn("CSS highlight not provided by the broswer")
-        return
-    }
+	CSS.highlights.delete("all-results")
 
-    CSS.highlights.delete("all-results")
+	const ranges: Range[] = []
 
-    const ranges: Range[] = []
+	for (const match of matches) {
+		const range = createRange(match)
+		ranges.push(range)
+	}
 
-    for (const match of matches) {
-        const range = createRange(match)
-        ranges.push(range)
-    }
-
-    const highlight = new Highlight(...ranges)
-    CSS.highlights.set("all-results", highlight)
+	const highlight = new Highlight(...ranges)
+	CSS.highlights.set("all-results", highlight)
 }

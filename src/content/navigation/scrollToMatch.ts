@@ -1,26 +1,25 @@
-import { createRange } from "../dom/createRange";
-import { type SearchMatch } from "../search/types";
+import { createRange } from "../dom/createRange"
+import { type SearchMatch } from "../search/match"
 
-export function scrollToMatch(match : SearchMatch | null) {
+export function scrollToMatch(match: SearchMatch | null) {
+	if (!match) {
+		return
+	}
 
-    if (!match) {
-        return
-    }
+	const range = createRange(match)
 
-    const range = createRange(match)
+	let element: Element | null
 
-    let element : Element | null
+	const container = range.commonAncestorContainer
 
-    const container = range.commonAncestorContainer
-    
-    if (container.nodeType === Node.TEXT_NODE) {
-        element = container.parentElement
-    } else {
-        element = container as Element
-    }
+	if (container.nodeType === Node.TEXT_NODE) {
+		element = container.parentElement
+	} else {
+		element = container as Element
+	}
 
-    element?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-    })
+	element?.scrollIntoView({
+		behavior: "smooth",
+		block: "center",
+	})
 }

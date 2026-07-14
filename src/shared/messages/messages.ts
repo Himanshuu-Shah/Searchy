@@ -1,27 +1,24 @@
-import type { SearchOptions } from "./search";
+import type { SearchConfig } from "../search/searchConfigs"
 
 export const MessageType = {
-    SEARCH: "SEARCH",
-    NEXT_RESULT: "NEXT_RESULT",
-    PREVIOUS_RESULT: "PREVIOUS_RESULT",
-    CLEAR_HIGHLIGHTS: "CLEAR_HIGHLIGHTS"
+	SEARCH: "SEARCH",
+	NEXT_RESULT: "NEXT_RESULT",
+	PREVIOUS_RESULT: "PREVIOUS_RESULT",
+	CLEAR_HIGHLIGHTS: "CLEAR_HIGHLIGHTS",
 } as const
 
 export interface SearchMessage {
-    type: typeof MessageType.SEARCH;
-    query: string;
-    options: SearchOptions
+	type: typeof MessageType.SEARCH
+	query: string
+	searchConfig: SearchConfig
 }
 
 export interface NextResult {
-    type: typeof MessageType.NEXT_RESULT
+	type: typeof MessageType.NEXT_RESULT
 }
 
 export interface PreviousResult {
-    type: typeof MessageType.PREVIOUS_RESULT
+	type: typeof MessageType.PREVIOUS_RESULT
 }
 
-export type ExtensionMessage =
-    | SearchMessage
-    | NextResult
-    | PreviousResult
+export type ExtensionMessage = SearchMessage | NextResult | PreviousResult

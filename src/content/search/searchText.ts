@@ -1,35 +1,37 @@
-import type { SearchOptions } from "../../shared/messages/search"
+import type { SearchConfig } from "../../shared/search/searchConfigs"
 import { findMatches } from "./findmatches"
-import { type SearchMatch } from "./types"
+import { type SearchMatch } from "./match"
 
-export function searchText(query: string, options: SearchOptions): SearchMatch[] {
-    
-    if (!query.trim()) {
-        return []
-    }
+export function searchText(
+	query: string,
+	searchConfig: SearchConfig
+): SearchMatch[] {
+	if (!query.trim()) {
+		return []
+	}
 
-    const results: SearchMatch[] = Array()
+	const results: SearchMatch[] = []
 
-    const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_TEXT
-    )
+	const walker = document.createTreeWalker(
+		document.body,
+		NodeFilter.SHOW_TEXT
+	)
 
-    let node = walker.nextNode()
+	let node = walker.nextNode()
 
-    while (node) {
-        const text = node.textContent || ""
-        const matches = findMatches(text, query, options)
+	while (node) {
+		const text = node.textContent || ""
+		const matches = findMatches(text, query, searchConfig)
 
-        for (const match of matches) {
-            results.push({
-                ...match,
-                node: node as Text
-            })
-        }
+		for (const match of matches) {
+			results.push({
+				...match,
+				node: node as Text,
+			})
+		}
 
-        node = walker.nextNode()
-    }
+		node = walker.nextNode()
+	}
 
-    return results
+	return results
 }

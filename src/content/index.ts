@@ -1,9 +1,9 @@
-import { MessageType, type ExtensionMessage } from "../shared/messages/messages";
-import { searchText } from "./search/searchText";
-import { highlight } from "./highlight/highlight";
-import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch";
-import type { SearchMatch } from "./search/types";
-import { scrollToMatch } from "./navigation/scrollToMatch";
+import { MessageType, type ExtensionMessage } from "../shared/messages/messages"
+import { searchText } from "./search/searchText"
+import { highlight } from "./highlight/highlight"
+import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch"
+import type { SearchMatch } from "./search/match"
+import { scrollToMatch } from "./navigation/scrollToMatch"
 import "./highlight/highlight.css"
 
 console.log("Content script injected.")
@@ -12,39 +12,36 @@ let matches: SearchMatch[] = []
 let currentIndex = -1
 
 chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
-    switch (message.type) {
-        case MessageType.SEARCH:
-            matches = searchText(message.query, message.options)
-            currentIndex = matches.length > 0 ? 0 : -1
+	switch (message.type) {
+		case MessageType.SEARCH:
+			matches = searchText(message.query, message.searchConfig)
+			currentIndex = matches.length > 0 ? 0 : -1
 
-            const currentMatch =
-            currentIndex >= 0
-                ? matches[currentIndex]
-                : null
-            
-            highlight(matches)
-            highlightCurrentMatch(currentMatch)
-            scrollToMatch(currentMatch)
+			const currentMatch =
+				currentIndex >= 0 ? matches[currentIndex] : null
 
-            break
+			highlight(matches)
+			highlightCurrentMatch(currentMatch)
+			scrollToMatch(currentMatch)
 
-        case MessageType.NEXT_RESULT:
-            if (matches.length === 0) break;
+			break
 
-            currentIndex = (currentIndex + 1) % matches.length
-            highlightCurrentMatch(matches[currentIndex])
-            scrollToMatch(matches[currentIndex])
+		case MessageType.NEXT_RESULT:
+			if (matches.length === 0) break
 
-            break
+			currentIndex = (currentIndex + 1) % matches.length
+			highlightCurrentMatch(matches[currentIndex])
+			scrollToMatch(matches[currentIndex])
 
-        case MessageType.PREVIOUS_RESULT:
-            if (matches.length === 0) break;
+			break
 
-            currentIndex = ((currentIndex - 1) + matches.length) % matches.length
-            highlightCurrentMatch(matches[currentIndex])
-            scrollToMatch(matches[currentIndex])
+		case MessageType.PREVIOUS_RESULT:
+			if (matches.length === 0) break
 
-            break
-        
-    }
-});
+			currentIndex = (currentIndex - 1 + matches.length) % matches.length
+			highlightCurrentMatch(matches[currentIndex])
+			scrollToMatch(matches[currentIndex])
+
+			break
+	}
+})
