@@ -1,4 +1,4 @@
-import { useState, type SubmitEvent } from "react"
+import { useEffect, useState } from "react"
 import "./App.css"
 import { AlgorithmSelector } from "./components/algorithmSelector"
 import {
@@ -10,6 +10,7 @@ import {
 	sendSearchMessage,
 	sendNextMessage,
 	sendPrevMessage,
+	sendClearMessage,
 } from "./sendMessage"
 import { buildSearchConfig } from "./build/buildSearchConfig"
 import { AlgorithmOptions } from "./components/algorithmOptions"
@@ -21,11 +22,6 @@ function App() {
 	const [searchState, setSearchState] = useState<SearchState>(
 		DEFAULT_POPUP_SEARCH_STATE
 	)
-
-	function handleSubmit(e: SubmitEvent<HTMLFormElement>): void {
-		e.preventDefault()
-		sendSearchMessage(input, buildSearchConfig(searchState))
-	}
 
 	function changeAlgorithm(algorithm: SearchAlgorithms): void {
 		setSearchState((prev) => ({
@@ -41,24 +37,43 @@ function App() {
 
 	console.log(currentState)
 
+	useEffect(() => {
+		const query = input.trim()
+		const search = currentState
+
+		const timeoutId = setTimeout(() => {
+			if (query === "") {
+				sendClearMessage()
+			} else {
+				sendSearchMessage(query, search)
+			}
+		}, 150)
+
+		return () => clearTimeout(timeoutId)
+	}, [input, currentState])
+
 	return (
 		<main style={{ padding: 16, width: 320 }}>
 			<h1>Searchy</h1>
 
 			<p>Browser extension loaded successfully.</p>
-			<form onSubmit={handleSubmit}>
+			<form>
 				<input
 					type="text"
 					placeholder="Search"
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
+							e.preventDefault()
+						}
+					}}
 				/>
 				<AlgorithmSelector
 					selected={searchState.currentAlgorithm}
 					changeAlgorithm={changeAlgorithm}
 				/>
 				<AlgorithmOptions searchState={currentState} />
-				<button type="submit">Search</button>
 			</form>
 			<button onClick={sendPrevMessage}>Previous</button>
 			<button onClick={sendNextMessage}>Next</button>

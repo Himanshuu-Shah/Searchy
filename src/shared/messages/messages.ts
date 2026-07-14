@@ -21,4 +21,9 @@ export interface PreviousResult {
 	type: typeof MessageType.PREVIOUS_RESULT
 }
 
-export type ExtensionMessage = SearchMessage | NextResult | PreviousResult
+export interface ClearHighlights {
+	type: typeof MessageType.CLEAR_HIGHLIGHTS
+}
+
+export type ExtensionMessage =
+	SearchMessage | NextResult | PreviousResult | ClearHighlights

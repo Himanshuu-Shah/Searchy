@@ -1,4 +1,7 @@
-import { type ExtensionMessage } from "../shared/messages/messages"
+import {
+	type ClearHighlights,
+	type ExtensionMessage,
+} from "../shared/messages/messages"
 import {
 	MessageType,
 	type SearchMessage,
@@ -41,4 +44,10 @@ export async function sendPrevMessage() {
 	await sendMessage({
 		type: MessageType.PREVIOUS_RESULT,
 	} satisfies PreviousResult)
+}
+
+export async function sendClearMessage() {
+	await sendMessage({
+		type: MessageType.CLEAR_HIGHLIGHTS,
+	} satisfies ClearHighlights)
 }

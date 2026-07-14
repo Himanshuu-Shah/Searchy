@@ -5,6 +5,7 @@ import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch"
 import type { SearchMatch } from "./search/match"
 import { scrollToMatch } from "./navigation/scrollToMatch"
 import "./highlight/highlight.css"
+import { clearHighlights } from "./highlight/clearHighlight"
 
 console.log("Content script injected.")
 
@@ -41,6 +42,10 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 			currentIndex = (currentIndex - 1 + matches.length) % matches.length
 			highlightCurrentMatch(matches[currentIndex])
 			scrollToMatch(matches[currentIndex])
+
+			break
+		case MessageType.CLEAR_HIGHLIGHTS:
+			clearHighlights()
 
 			break
 	}
