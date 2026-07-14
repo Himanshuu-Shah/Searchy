@@ -4,5 +4,6 @@ export function clearHighlights(): void {
 		return
 	}
 
+	CSS.highlights.delete("current-result")
 	CSS.highlights.delete("all-results")
 }

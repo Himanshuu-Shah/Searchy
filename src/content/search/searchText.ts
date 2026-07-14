@@ -3,6 +3,7 @@ import { findMatches } from "./findmatches"
 import { type SearchMatch } from "./match"
 
 export function searchText(
+	searchNode: ParentNode,
 	query: string,
 	searchConfig: SearchConfig
 ): SearchMatch[] {
@@ -12,10 +13,7 @@ export function searchText(
 
 	const results: SearchMatch[] = []
 
-	const walker = document.createTreeWalker(
-		document.body,
-		NodeFilter.SHOW_TEXT
-	)
+	const walker = document.createTreeWalker(searchNode, NodeFilter.SHOW_TEXT)
 
 	let node = walker.nextNode()
 

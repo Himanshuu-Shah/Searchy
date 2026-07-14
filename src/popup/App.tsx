@@ -11,6 +11,7 @@ import {
 	sendNextMessage,
 	sendPrevMessage,
 	sendClearMessage,
+	sendStartSelectionScope,
 } from "./sendMessage"
 import { buildSearchConfig } from "./build/buildSearchConfig"
 import { AlgorithmOptions } from "./components/algorithmOptions"
@@ -75,6 +76,7 @@ function App() {
 				/>
 				<AlgorithmOptions searchState={currentState} />
 			</form>
+			<button onClick={sendStartSelectionScope}>Select Scope</button>
 			<button onClick={sendPrevMessage}>Previous</button>
 			<button onClick={sendNextMessage}>Next</button>
 		</main>

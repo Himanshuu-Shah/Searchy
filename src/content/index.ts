@@ -11,11 +11,38 @@ console.log("Content script injected.")
 
 let matches: SearchMatch[] = []
 let currentIndex = -1
+let searchNode: ParentNode = document.body
+let selectingScope = false
+
+function handleScopeSelection(event: MouseEvent) {
+	if (!selectingScope) return
+
+	event.preventDefault()
+	event.stopPropagation()
+
+	const target = event.target
+
+	if (!(target instanceof Element)) {
+		return
+	}
+
+	searchNode = target
+
+	selectingScope = false
+
+	console.log("Scope selected:", searchNode)
+}
+
+document.addEventListener("click", handleScopeSelection, true)
 
 chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 	switch (message.type) {
 		case MessageType.SEARCH:
-			matches = searchText(message.query, message.searchConfig)
+			matches = searchText(
+				searchNode,
+				message.query,
+				message.searchConfig
+			)
 			currentIndex = matches.length > 0 ? 0 : -1
 
 			const currentMatch =
@@ -44,8 +71,14 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 			scrollToMatch(matches[currentIndex])
 
 			break
+
 		case MessageType.CLEAR_HIGHLIGHTS:
 			clearHighlights()
+
+			break
+
+		case MessageType.START_SCOPE_SELECTION:
+			selectingScope = !selectingScope
 
 			break
 	}

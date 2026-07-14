@@ -7,6 +7,7 @@ import {
 	type SearchMessage,
 	type NextResult,
 	type PreviousResult,
+	type StartScopeSelection,
 } from "../shared/messages/messages"
 import type { SearchConfig } from "../shared/search/searchConfigs"
 
@@ -50,4 +51,10 @@ export async function sendClearMessage() {
 	await sendMessage({
 		type: MessageType.CLEAR_HIGHLIGHTS,
 	} satisfies ClearHighlights)
+}
+
+export async function sendStartSelectionScope() {
+	await sendMessage({
+		type: MessageType.START_SCOPE_SELECTION,
+	} satisfies StartScopeSelection)
 }
