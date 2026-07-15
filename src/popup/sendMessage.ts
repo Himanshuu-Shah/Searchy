@@ -7,7 +7,7 @@ import {
 	type SearchMessage,
 	type NextResult,
 	type PreviousResult,
-	type StartScopeSelection,
+	type ToggleScopeSelection,
 } from "../shared/messages/messages"
 import type { SearchConfig } from "../shared/search/searchConfigs"
 
@@ -55,6 +55,6 @@ export async function sendClearMessage() {
 
 export async function sendStartSelectionScope() {
 	await sendMessage({
-		type: MessageType.START_SCOPE_SELECTION,
-	} satisfies StartScopeSelection)
+		type: MessageType.TOGGLE_SCOPE_SELECTION,
+	} satisfies ToggleScopeSelection)
 }

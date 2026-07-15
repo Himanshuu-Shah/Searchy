@@ -1,56 +1,76 @@
 import { MessageType, type ExtensionMessage } from "../shared/messages/messages"
 import { searchText } from "./search/searchText"
-import { highlight } from "./highlight/highlight"
 import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch"
 import type { SearchMatch } from "./search/match"
 import { scrollToMatch } from "./navigation/scrollToMatch"
 import "./highlight/highlight.css"
 import { clearHighlights } from "./highlight/clearHighlight"
+import type { SearchConfig } from "../shared/search/searchConfigs"
+import { displaySearchResulst } from "./search/setSearchResults"
+import { beginElementSelection } from "./dom/selectElement"
 
 console.log("Content script injected.")
 
+// ---------- State ----------
+
+// Current search results
 let matches: SearchMatch[] = []
+
+// Index of the currently focused match in `matches`.
+// -1 means no match is currently selected.
 let currentIndex = -1
+
+// Root node used when searching the page.
+// Defaults to the whole document body, but changes when the user
+// selects a search scope.
 let searchNode: ParentNode = document.body
-let selectingScope = false
 
-function handleScopeSelection(event: MouseEvent) {
-	if (!selectingScope) return
+// The latest search request received from the popup.
+// Stored so the search can be re-run when the scope changes.
+let currentSearch: {
+	query: string
+	searchConfig: SearchConfig
+} | null = null
 
-	event.preventDefault()
-	event.stopPropagation()
+// Cleanup function for the temporary element-selection listener.
+// Non-null means the extension is currently waiting for the user
+// to choose a search scope.
+let stopSelection: (() => void) | null = null //
 
-	const target = event.target
+// ---------- Helpers ----------
 
-	if (!(target instanceof Element)) {
-		return
-	}
+/**
+ * Executes the latest search request using the current search scope.
+ *
+ * Used when:
+ * - a new search request arrives from the popup
+ * - the user selects a different search scope
+ */
+function rerunSearch() {
+	if (!currentSearch) return
 
-	searchNode = target
+	matches = searchText(
+		searchNode,
+		currentSearch.query,
+		currentSearch.searchConfig
+	)
 
-	selectingScope = false
+	currentIndex = matches.length > 0 ? 0 : -1
 
-	console.log("Scope selected:", searchNode)
+	displaySearchResulst(matches, currentIndex)
 }
 
-document.addEventListener("click", handleScopeSelection, true)
+// ---------- Messages ----------
 
 chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 	switch (message.type) {
 		case MessageType.SEARCH:
-			matches = searchText(
-				searchNode,
-				message.query,
-				message.searchConfig
-			)
-			currentIndex = matches.length > 0 ? 0 : -1
+			currentSearch = {
+				query: message.query,
+				searchConfig: message.searchConfig,
+			}
 
-			const currentMatch =
-				currentIndex >= 0 ? matches[currentIndex] : null
-
-			highlight(matches)
-			highlightCurrentMatch(currentMatch)
-			scrollToMatch(currentMatch)
+			rerunSearch()
 
 			break
 
@@ -73,13 +93,24 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 			break
 
 		case MessageType.CLEAR_HIGHLIGHTS:
+			currentSearch = null
+			matches = []
+			currentIndex = -1
 			clearHighlights()
 
 			break
 
-		case MessageType.START_SCOPE_SELECTION:
-			selectingScope = !selectingScope
+		case MessageType.TOGGLE_SCOPE_SELECTION:
+			if (stopSelection) {
+				stopSelection()
+				stopSelection = null
+				break
+			}
 
-			break
+			stopSelection = beginElementSelection((element: Element) => {
+				searchNode = element
+				stopSelection = null
+				rerunSearch()
+			})
 	}
 })

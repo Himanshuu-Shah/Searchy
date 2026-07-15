@@ -1,6 +1,13 @@
 import type { RegexConfig } from "../../shared/search/algorithmConfigs"
 import type { MatchLocation } from "./match"
 
+/**
+ * Finds matches using a regular expression.
+ *
+ * Invalid regular expressions are caught and treated as
+ * having no matches.
+ */
+
 export function findRegexMatches(
 	text: string,
 	query: string,

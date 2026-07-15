@@ -5,7 +5,7 @@ export const MessageType = {
 	NEXT_RESULT: "NEXT_RESULT",
 	PREVIOUS_RESULT: "PREVIOUS_RESULT",
 	CLEAR_HIGHLIGHTS: "CLEAR_HIGHLIGHTS",
-	START_SCOPE_SELECTION: "START_SCOPE_SELECTION",
+	TOGGLE_SCOPE_SELECTION: "TOGGLE_SCOPE_SELECTION",
 } as const
 
 export interface SearchMessage {
@@ -26,8 +26,8 @@ export interface ClearHighlights {
 	type: typeof MessageType.CLEAR_HIGHLIGHTS
 }
 
-export interface StartScopeSelection {
-	type: typeof MessageType.START_SCOPE_SELECTION
+export interface ToggleScopeSelection {
+	type: typeof MessageType.TOGGLE_SCOPE_SELECTION
 }
 
 export type ExtensionMessage =
@@ -35,4 +35,4 @@ export type ExtensionMessage =
 	| NextResult
 	| PreviousResult
 	| ClearHighlights
-	| StartScopeSelection
+	| ToggleScopeSelection

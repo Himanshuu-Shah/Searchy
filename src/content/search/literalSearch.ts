@@ -12,6 +12,14 @@ function isWordCharacter(character: string | undefined): boolean {
 	return /\w/.test(character ?? "")
 }
 
+/**
+ * Finds literal string matches.
+ *
+ * Supports:
+ * - case sensitivity
+ * - whole-word matching
+ */
+
 export function findLiteralMatches(
 	text: string,
 	query: string,

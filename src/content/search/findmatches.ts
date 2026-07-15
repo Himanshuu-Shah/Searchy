@@ -3,6 +3,10 @@ import { findLiteralMatches } from "./literalSearch"
 import { findRegexMatches } from "./regrexSearch"
 import type { MatchLocation } from "./match"
 
+/**
+ * Dispatches the search request to the selected algorithm.
+ */
+
 export function findMatches(
 	text: string,
 	query: string,
