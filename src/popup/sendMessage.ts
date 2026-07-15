@@ -1,5 +1,6 @@
 import {
 	type ClearHighlights,
+	type ClearScope,
 	type ExtensionMessage,
 } from "../shared/messages/messages"
 import {
@@ -57,4 +58,10 @@ export async function sendStartSelectionScope() {
 	await sendMessage({
 		type: MessageType.TOGGLE_SCOPE_SELECTION,
 	} satisfies ToggleScopeSelection)
+}
+
+export async function sendClearScopeMessage() {
+	await sendMessage({
+		type: MessageType.CLEAR_SCOPE,
+	} satisfies ClearScope)
 }

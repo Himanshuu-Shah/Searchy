@@ -112,5 +112,13 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 				stopSelection = null
 				rerunSearch()
 			})
+
+			break
+
+		case MessageType.CLEAR_SCOPE:
+			searchNode = document.body
+			rerunSearch()
+
+			break
 	}
 })
