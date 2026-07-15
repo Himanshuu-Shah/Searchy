@@ -6,7 +6,7 @@ import { scrollToMatch } from "./navigation/scrollToMatch"
 import "./highlight/highlight.css"
 import { clearHighlights } from "./highlight/clearHighlight"
 import type { SearchConfig } from "../shared/search/searchConfigs"
-import { displaySearchResulst } from "./search/displaySearchResults"
+import { displaySearchResults } from "./search/displaySearchResults"
 import { beginElementSelection } from "./dom/selectElement"
 
 console.log("Content script injected.")
@@ -24,6 +24,12 @@ let currentIndex = -1
 // Defaults to the whole document body, but changes when the user
 // selects a search scope.
 let searchNode: ParentNode = document.body
+
+let selectedScope: {
+	element: HTMLElement
+	outline: string
+	outlineOffset: string
+} | null = null
 
 // The latest search request received from the popup.
 // Stored so the search can be re-run when the scope changes.
@@ -57,7 +63,41 @@ function rerunSearch() {
 
 	currentIndex = matches.length > 0 ? 0 : -1
 
-	displaySearchResulst(matches, currentIndex)
+	displaySearchResults(matches, currentIndex)
+}
+
+/**
+ * Removes the active search scope and restores
+ * the element's original appearance.
+ */
+function clearSelectedScope() {
+	if (!selectedScope) {
+		return
+	}
+
+	selectedScope.element.style.outline = selectedScope.outline
+	selectedScope.element.style.outlineOffset = selectedScope.outlineOffset
+
+	selectedScope = null
+}
+
+/**
+ * Makes the given element the active search scope
+ * and keeps it visually highlighted until cleared.
+ */
+function selectScope(element: HTMLElement) {
+	clearSelectedScope()
+
+	selectedScope = {
+		element,
+		outline: element.style.outline,
+		outlineOffset: element.style.outlineOffset,
+	}
+
+	element.style.outline = "2px solid #6d7178"
+	element.style.outlineOffset = "2px"
+
+	searchNode = element
 }
 
 // ---------- Messages ----------
@@ -101,21 +141,27 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 			break
 
 		case MessageType.TOGGLE_SCOPE_SELECTION:
+			clearSelectedScope()
+
 			if (stopSelection) {
 				stopSelection()
 				stopSelection = null
+
 				break
 			}
 
-			stopSelection = beginElementSelection((element: Element) => {
-				searchNode = element
+			stopSelection = beginElementSelection((element: HTMLElement) => {
 				stopSelection = null
+
+				selectScope(element)
 				rerunSearch()
 			})
 
 			break
 
 		case MessageType.CLEAR_SCOPE:
+			clearSelectedScope()
+
 			searchNode = document.body
 			rerunSearch()
 

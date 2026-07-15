@@ -11,7 +11,7 @@ import type { SearchMatch } from "./match"
  * - Scrolls the current match into view.
  */
 
-export function displaySearchResulst(
+export function displaySearchResults(
 	newMatches: SearchMatch[],
 	currentIndex: number
 ) {
