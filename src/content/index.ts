@@ -6,7 +6,7 @@ import { scrollToMatch } from "./navigation/scrollToMatch"
 import "./highlight/highlight.css"
 import { clearHighlights } from "./highlight/clearHighlight"
 import type { SearchConfig } from "../shared/search/searchConfigs"
-import { displaySearchResulst } from "./search/setSearchResults"
+import { displaySearchResulst } from "./search/displaySearchResults"
 import { beginElementSelection } from "./dom/selectElement"
 
 console.log("Content script injected.")
