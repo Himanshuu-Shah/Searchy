@@ -8,9 +8,10 @@ import { clearHighlights } from "./highlight/clearHighlight"
 import type { SearchConfig } from "../shared/search/searchConfigs"
 import { displaySearchResults } from "./search/displaySearchResults"
 import { beginElementSelection } from "./dom/selectElement"
+import { mountSearchy } from "../ui/mountSearchy"
 
 console.log("Content script injected.")
-
+console.log(mountSearchy())
 // ---------- State ----------
 
 // Current search results
