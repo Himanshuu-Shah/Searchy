@@ -1,0 +1,50 @@
+@import "./fonts.css";
+@import "./dropdown.css";
+@import "../components/SearchDock/SearchDock.css";
+@import "../components/SearchDock/SearchBar/SearchBar.css";
+@import "../components/Button/Button.css";
+@import "../components/SearchDock/SearchBar/SearchAlgorithm/SearchAlgorithm.css";
+@import "../components/SearchDock/SearchBar/SearchMode/SearchMode.css";
+@import "../components/SearchDock/SearchBar/SearchInput/SearchInput.css";
+@import "../components/SearchDock/SearchBar/Navigation/Navigation.css";
+@import "../components/SearchDock/SearchBar/SearchOptions/SearchOptions.css";
+
+:host {
+	--searchy-height: 40px;
+
+	--searchy-background: hsl(0, 0%, 100%);
+	--searchy-border: hsl(240, 3%, 85%);
+
+	--searchy-radius: 4px;
+
+	--searchy-gap: 12px;
+
+	--searchy-font-family: "Inter", system-ui, sans-serif;
+	--searchy-font-size: 14px;
+	--searchy-font-weight: 400;
+	--searchy-text-color: hsl(0, 0%, 0%);
+
+	--searchy-button-hover-background: hsl(45, 15%, 95%);
+	--searchy-button-hover-border-color: hsl(45, 15%, 90%);
+
+	font-family: var(--searchy-font-family);
+	font-size: var(--searchy-font-size);
+	font-weight: var(--searchy-font-weight);
+	line-height: 1.4;
+	color: var(--searchy-text-color);
+
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea,
+label {
+	font: inherit;
+}

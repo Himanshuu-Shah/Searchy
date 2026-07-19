@@ -1,11 +1,13 @@
-import { useSearchSession } from "../session/useSearchSession"
+import { useSearchSession } from "../../../../session/useSearchSession"
+import "./SearchInput.css"
 
 export default function SearchInput() {
 	const { session, actions } = useSearchSession()
 
 	return (
-		<form>
+		<form className="inputForm">
 			<input
+				className="inputBox"
 				type="text"
 				placeholder="Search"
 				onKeyDown={(e) => {

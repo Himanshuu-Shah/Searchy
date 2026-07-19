@@ -1,6 +1,9 @@
 import { useState } from "react"
-import type { SearchMode } from "../session/SearchSession"
-import { useSearchSession } from "../session/useSearchSession"
+import type { SearchMode } from "../../../../session/SearchSession"
+import { useSearchSession } from "../../../../session/useSearchSession"
+import Button from "../../../Button/Button"
+import "./SearchMode.css"
+import "../../../../styles/dropdown.css"
 
 const SEARCH_MODE: {
 	id: SearchMode
@@ -28,30 +31,16 @@ export default function SearchModeSelector() {
 	)?.name
 
 	return (
-		<div style={{ position: "relative", width: "200px" }}>
-			<button type="button" onClick={() => setIsOpen((open) => !open)}>
+		<div className="searchModeSelector">
+			<Button type="button" onClick={() => setIsOpen((open) => !open)}>
 				{selectedMode}
-			</button>
+			</Button>
 
 			{isOpen && (
-				<ul
-					style={{
-						listStyle: "none",
-						padding: 0,
-						margin: 0,
-						border: "1px solid #ccc",
-						position: "absolute",
-						width: "100%",
-						background: "#fff",
-					}}
-				>
+				<ul className="dropdown" style={{ right: "10px" }}>
 					{SEARCH_MODE.map((mode) => (
 						<li
 							key={mode.id}
-							style={{
-								padding: "10px",
-								cursor: "pointer",
-							}}
 							onClick={() => {
 								actions.mode.change(mode.id)
 								setIsOpen(false)

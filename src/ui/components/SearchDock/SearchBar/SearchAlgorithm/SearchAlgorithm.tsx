@@ -1,6 +1,9 @@
 import { useState } from "react"
-import type { SearchAlgorithm } from "../session/SearchSession"
-import { useSearchSession } from "../session/useSearchSession"
+import type { SearchAlgorithm } from "../../../../session/SearchSession"
+import { useSearchSession } from "../../../../session/useSearchSession"
+import Button from "../../../Button/Button"
+import "./SearchAlgorithm.css"
+import "../../../../styles/dropdown.css"
 
 const SEARCH_ALGORITHMS: {
 	id: SearchAlgorithm
@@ -28,30 +31,16 @@ export default function SearchAlgorithmSelector() {
 	)?.name
 
 	return (
-		<div style={{ position: "relative", width: "200px" }}>
-			<button type="button" onClick={() => setIsOpen((open) => !open)}>
+		<div className="searchAlgorithmSelector">
+			<Button type="button" onClick={() => setIsOpen((open) => !open)}>
 				{selectedAlgorithm}
-			</button>
+			</Button>
 
 			{isOpen && (
-				<ul
-					style={{
-						listStyle: "none",
-						padding: 0,
-						margin: 0,
-						border: "1px solid #ccc",
-						position: "absolute",
-						width: "100%",
-						background: "#fff",
-					}}
-				>
+				<ul className="dropdown">
 					{SEARCH_ALGORITHMS.map((algorithm) => (
 						<li
 							key={algorithm.id}
-							style={{
-								padding: "10px",
-								cursor: "pointer",
-							}}
 							onClick={() => {
 								setIsOpen(false)
 								actions.algorithm.change(algorithm.id)

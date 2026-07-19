@@ -1,0 +1,20 @@
+.searchButton {
+	background-color: var(--searchy-background);
+	border: none;
+	padding: 0 5px;
+	height: 30px;
+
+	font-family: var(--searchy-font-family);
+	font-size: var(--searchy-font-size);
+	font-weight: var(--searchy-font-weight);
+
+	border-radius: var(--searchy-radius);
+	border: 1px solid transparent;
+
+	cursor: pointer;
+}
+
+.searchButton:hover {
+	background-color: var(--searchy-button-hover-background);
+	border: 1px solid var(--searchy-button-hover-border-color);
+}

@@ -1,4 +1,4 @@
-import SearchDock from "./components/SearchDock"
+import SearchDock from "./components/SearchDock/SearchDock"
 import { SearchSessionProvider } from "./session/SearchSessionProvider"
 
 export default function App() {

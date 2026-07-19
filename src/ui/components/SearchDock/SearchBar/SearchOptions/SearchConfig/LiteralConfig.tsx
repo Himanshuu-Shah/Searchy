@@ -1,4 +1,4 @@
-import { useSearchSession } from "../../session/useSearchSession"
+import { useSearchSession } from "../../../../../session/useSearchSession"
 
 export type LiteralConfig = {
 	caseSensitive: boolean

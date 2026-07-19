@@ -1,0 +1,14 @@
+.searchDock {
+	position: fixed;
+
+	display: flex;
+	align-items: center;
+
+	height: var(--searchy-height);
+	background-color: var(--searchy-background);
+	border-top: 1px solid var(--searchy-border);
+
+	left: 0;
+	right: 0;
+	bottom: 0;
+}

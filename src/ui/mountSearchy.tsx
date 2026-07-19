@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client"
 import App from "./App"
+import searchyStyles from "./styles/searchy.css?inline"
 
 export function mountSearchy() {
 	// Create the host element for Searchy.
@@ -19,6 +20,11 @@ export function mountSearchy() {
 	const shadowRoot = host.attachShadow({
 		mode: "open",
 	})
+
+	const style = document.createElement("style")
+	style.textContent = searchyStyles
+
+	shadowRoot.append(style)
 
 	// React renders into a regular DOM element.
 	const container = document.createElement("div")
