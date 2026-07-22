@@ -1,25 +1,41 @@
+/**
+ * Registers the global keyboard shortcuts for Searchy.
+ *
+ * The event listener is recreated whenever values used by the handler
+ * change so the browser always invokes a handler with the latest React
+ * state rather than a stale closure.
+ */
+
 import { useEffect } from "react"
 import { useDock } from "../ui/dock/useDock"
 
 export function useKeyboardShortcuts() {
-	const { actions } = useDock()
+	const { dockState, dockActions } = useDock()
 
-	useEffect(() => {
-		const handler = (event: KeyboardEvent) => {
-			if (event.ctrlKey && event.key.toLowerCase() === "f") {
-				event.preventDefault()
-				actions.show()
+	/**
+	 * The handler closes over React state.
+	 * The effect is recreated whenever those values change so the
+	 * browser's event listener always references the latest closure.
+	 */
+	function handler(event: KeyboardEvent) {
+		if (event.ctrlKey && event.key.toLowerCase() === "f") {
+			event.preventDefault()
+			if (!dockState.visible) {
+				dockActions.show()
 			}
-
-			if (event.key === "Escape") {
-				actions.hide()
-			}
+			dockActions.requestFocus()
 		}
 
+		if (event.key === "Escape") {
+			dockActions.hide()
+		}
+	}
+
+	useEffect(() => {
 		window.addEventListener("keydown", handler)
 
 		return () => {
 			window.removeEventListener("keydown", handler)
 		}
-	}, [actions])
+	}, [dockState.visible, dockActions])
 }

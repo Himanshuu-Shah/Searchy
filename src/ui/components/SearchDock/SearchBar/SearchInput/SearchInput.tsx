@@ -1,12 +1,28 @@
+import { useEffect, useRef } from "react"
+import { useDock } from "../../../../dock/useDock"
 import { useSearchSession } from "../../../../session/useSearchSession"
 import "./SearchInput.css"
 
 export default function SearchInput() {
 	const { session, actions } = useSearchSession()
+	const { dockState } = useDock()
+
+	const inputRef = useRef<HTMLInputElement | null>(null)
+
+	// Focus requests are expressed as state changes.
+	// React runs this effect after committing the latest render,
+	// ensuring the input is visible before attempting to focus it.
+	useEffect(() => {
+		if (dockState.visible) {
+			inputRef.current?.focus()
+			inputRef.current?.select()
+		}
+	}, [dockState.focusRequest])
 
 	return (
 		<form className="inputForm">
 			<input
+				ref={inputRef}
 				className="inputBox"
 				type="text"
 				placeholder="Search"

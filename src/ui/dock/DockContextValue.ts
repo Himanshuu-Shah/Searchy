@@ -6,10 +6,17 @@ export interface DockActions {
 	hide(): void
 
 	toggle(): void
+
+	/**
+	 * Requests that the search input receives focus.
+	 * This does not focus the DOM directly; consumers
+	 * react to changes in DockState.focusRequest.
+	 */
+	requestFocus(): void
 }
 
 export interface DockContextValue {
-	state: DockState
+	dockState: DockState
 
-	actions: DockActions
+	dockActions: DockActions
 }

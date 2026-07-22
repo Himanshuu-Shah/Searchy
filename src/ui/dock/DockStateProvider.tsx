@@ -6,33 +6,46 @@ import { DockContext } from "./DockContext"
 
 const INITIAL_STATE: DockState = {
 	visible: false,
+
+	// Monotonically increasing identifier used to request
+	// focus without imperatively touching DOM nodes.
+	focusRequest: 0,
 }
 type Prop = {
 	children: ReactNode
 }
 export function DockProvider({ children }: Prop) {
-	const [state, setState] = useState<DockState>(INITIAL_STATE)
+	const [dockState, setDockState] = useState<DockState>(INITIAL_STATE)
 
-	const actions = useMemo<DockActions>(
+	const dockActions = useMemo<DockActions>(
 		() => ({
 			show() {
-				setState((prev) => ({
+				setDockState((prev) => ({
 					...prev,
 					visible: true,
 				}))
 			},
 
 			hide() {
-				setState((prev) => ({
+				setDockState((prev) => ({
 					...prev,
 					visible: false,
 				}))
 			},
 
 			toggle() {
-				setState((prev) => ({
+				setDockState((prev) => ({
 					...prev,
 					visible: !prev.visible,
+				}))
+			},
+
+			// Incrementing the request id causes SearchInput to
+			// receive a new focus request after the next render.
+			requestFocus() {
+				setDockState((prev) => ({
+					...prev,
+					focusRequest: prev.focusRequest + 1,
 				}))
 			},
 		}),
@@ -41,10 +54,10 @@ export function DockProvider({ children }: Prop) {
 
 	const value = useMemo<DockContextValue>(
 		() => ({
-			state,
-			actions,
+			dockState,
+			dockActions,
 		}),
-		[state, actions]
+		[dockState, dockActions]
 	)
 
 	return <DockContext.Provider value={value}>{children}</DockContext.Provider>

@@ -3,11 +3,11 @@ import SearchBar from "./SearchBar/SearchBar"
 import "./SearchDock.css"
 
 export default function SearchDock() {
-	const { state } = useDock()
+	const { dockState } = useDock()
 
 	return (
 		<div
-			className={`searchDock ${state.visible ? "" : "searchDockHidden"}`}
+			className={`searchDock ${dockState.visible ? "" : "searchDockHidden"}`}
 		>
 			<SearchBar />
 		</div>
