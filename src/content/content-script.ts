@@ -11,7 +11,7 @@ import { beginElementSelection } from "./dom/selectElement"
 import { mountSearchy } from "../ui/mountSearchy"
 
 console.log("Content script injected.")
-console.log(mountSearchy())
+mountSearchy()
 // ---------- State ----------
 
 // Current search results

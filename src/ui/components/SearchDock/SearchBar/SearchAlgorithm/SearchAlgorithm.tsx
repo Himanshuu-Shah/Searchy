@@ -1,9 +1,10 @@
 import { useState } from "react"
-import type { SearchAlgorithm } from "../../../../session/SearchSession"
+import type { SearchAlgorithm } from "../../../../../shared/messages/session/SearchSession"
 import { useSearchSession } from "../../../../session/useSearchSession"
 import Button from "../../../Button/Button"
 import "./SearchAlgorithm.css"
 import "../../../../styles/dropdown.css"
+import { updateAlgorithmIntent } from "../../../../sendIntent"
 
 const SEARCH_ALGORITHMS: {
 	id: SearchAlgorithm
@@ -42,8 +43,11 @@ export default function SearchAlgorithmSelector() {
 						<li
 							key={algorithm.id}
 							onClick={() => {
-								setIsOpen(false)
+								const currentAlgorithm = algorithm.id
 								actions.algorithm.change(algorithm.id)
+
+								updateAlgorithmIntent(currentAlgorithm)
+								setIsOpen(false)
 							}}
 						>
 							{algorithm.name}

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import { useDock } from "../../../../dock/useDock"
 import { useSearchSession } from "../../../../session/useSearchSession"
 import "./SearchInput.css"
+import { updateQueryIntent } from "../../../../sendIntent"
 
 export default function SearchInput() {
 	const { session, actions } = useSearchSession()
@@ -32,7 +33,14 @@ export default function SearchInput() {
 					}
 				}}
 				value={session.query}
-				onChange={(e) => actions.query.change(e.target.value)}
+				onChange={async (e) => {
+					const query = e.target.value
+					actions.query.change(query)
+
+					updateQueryIntent(query).then((response) => {
+						console.log(response)
+					})
+				}}
 			/>
 		</form>
 	)

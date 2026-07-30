@@ -1,8 +1,9 @@
 import { createRoot } from "react-dom/client"
 import App from "./App"
 import searchyStyles from "./styles/searchy.css?inline"
+import { initiateSession } from "./sendIntent"
 
-export function mountSearchy() {
+export async function mountSearchy() {
 	// Create the host element for Searchy.
 	const host = document.createElement("div")
 	const HOST_ID = "searchy-root"
@@ -30,9 +31,15 @@ export function mountSearchy() {
 	const container = document.createElement("div")
 	shadowRoot.append(container)
 
+	// Fetch initial search session from the background script
+	const response = await initiateSession()
+	if (!response.success) {
+		throw new Error(response.error)
+	}
+
 	// Mount the React application.
 	const root = createRoot(container)
-	root.render(<App />)
+	root.render(<App initialSession={response.searchSession} />)
 
 	// Return a cleanup function.
 	return () => {

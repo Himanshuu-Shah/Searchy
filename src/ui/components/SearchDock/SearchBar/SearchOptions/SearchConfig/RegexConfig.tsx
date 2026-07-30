@@ -1,8 +1,5 @@
+import { updateRegexCaseSensitive } from "../../../../../sendIntent"
 import { useSearchSession } from "../../../../../session/useSearchSession"
-
-export type RegexConfig = {
-	caseSensitive: boolean
-}
 
 export function RegexConfig() {
 	const { session, actions } = useSearchSession()
@@ -15,11 +12,13 @@ export function RegexConfig() {
 				<input
 					type="checkbox"
 					checked={session.config.regex.caseSensitive}
-					onChange={(e) =>
-						actions.regex.setCaseSensitive(e.target.checked)
-					}
+					onChange={(e) => {
+						const checked = e.target.checked
+						updateRegexCaseSensitive(checked)
+						actions.regex.setCaseSensitive(checked)
+					}}
 				/>
-				Whole Word
+				Case Sensitive
 			</label>
 		</>
 	)

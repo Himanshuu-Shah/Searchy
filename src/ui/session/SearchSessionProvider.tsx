@@ -4,37 +4,23 @@ import type {
 	SearchSession,
 	SearchAlgorithm,
 	SearchMode,
-} from "./SearchSession"
+} from "../../shared/messages/session/SearchSession"
 import type {
 	SearchSessionContextValue,
 	SearchSessionActions,
 } from "./SearchSessionContextValue"
-
-const INITIAL_SESSION: SearchSession = {
-	query: "",
-
-	mode: "local",
-	algorithm: "literal",
-
-	config: {
-		literal: {
-			caseSensitive: false,
-			wholeWord: false,
-		},
-		regex: {
-			caseSensitive: false,
-		},
-	},
-}
+// import type { SessionResponse } from "../../shared/messages/intents"
 
 type SearchSessionProviderProps = {
 	children: ReactNode
+	initialSession: SearchSession
 }
 
 export function SearchSessionProvider({
 	children,
+	initialSession,
 }: SearchSessionProviderProps) {
-	const [session, setSession] = useState<SearchSession>(INITIAL_SESSION)
+	const [session, setSession] = useState<SearchSession>(initialSession)
 	const actions = useMemo<SearchSessionActions>(
 		() => ({
 			query: {
@@ -126,6 +112,10 @@ export function SearchSessionProvider({
 		}),
 		[session, actions]
 	)
+
+	// chrome.runtime.onMessage.addListener((message: SessionResponse) => {
+	// 	setSession(message.searchSession)
+	// })
 
 	return (
 		<SearchSessionContext.Provider value={value}>

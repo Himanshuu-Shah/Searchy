@@ -2,7 +2,7 @@ import type {
 	SearchMode,
 	SearchAlgorithm,
 	SearchSession,
-} from "./SearchSession"
+} from "../../shared/messages/session/SearchSession"
 
 export interface SearchSessionActions {
 	query: {

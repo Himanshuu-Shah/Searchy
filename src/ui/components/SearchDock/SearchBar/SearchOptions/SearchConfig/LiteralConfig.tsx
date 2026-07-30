@@ -1,9 +1,8 @@
+import {
+	updateLiteralCaseSensitive,
+	updateLiteralWholeWord,
+} from "../../../../../sendIntent"
 import { useSearchSession } from "../../../../../session/useSearchSession"
-
-export type LiteralConfig = {
-	caseSensitive: boolean
-	wholeWord: boolean
-}
 
 export function LiteralConfig() {
 	const { session, actions } = useSearchSession()
@@ -16,9 +15,11 @@ export function LiteralConfig() {
 				<input
 					type="checkbox"
 					checked={session.config.literal.wholeWord}
-					onChange={(e) =>
-						actions.literal.setWholeWord(e.target.checked)
-					}
+					onChange={(e) => {
+						const checked = e.target.checked
+						actions.literal.setWholeWord(checked)
+						updateLiteralWholeWord(checked)
+					}}
 				/>
 				Whole Word
 			</label>
@@ -29,9 +30,11 @@ export function LiteralConfig() {
 				<input
 					type="checkbox"
 					checked={session.config.literal.caseSensitive}
-					onChange={(e) =>
-						actions.literal.setCaseSensitive(e.target.checked)
-					}
+					onChange={(e) => {
+						const checked = e.target.checked
+						actions.literal.setCaseSensitive(checked)
+						updateLiteralCaseSensitive(checked)
+					}}
 				/>
 				Case Sensitive
 			</label>
