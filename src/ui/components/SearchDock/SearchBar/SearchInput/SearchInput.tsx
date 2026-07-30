@@ -5,7 +5,7 @@ import "./SearchInput.css"
 import { updateQueryIntent } from "../../../../sendIntent"
 
 export default function SearchInput() {
-	const { session, actions } = useSearchSession()
+	const { session } = useSearchSession()
 	const { dockState } = useDock()
 
 	const inputRef = useRef<HTMLInputElement | null>(null)
@@ -33,13 +33,9 @@ export default function SearchInput() {
 					}
 				}}
 				value={session.query}
-				onChange={async (e) => {
+				onChange={(e) => {
 					const query = e.target.value
-					actions.query.change(query)
-
-					updateQueryIntent(query).then((response) => {
-						console.log(response)
-					})
+					updateQueryIntent(query)
 				}}
 			/>
 		</form>

@@ -25,7 +25,7 @@ const SEARCH_ALGORITHMS: {
 
 export default function SearchAlgorithmSelector() {
 	const [isOpen, setIsOpen] = useState(false)
-	const { session, actions } = useSearchSession()
+	const { session } = useSearchSession()
 
 	const selectedAlgorithm = SEARCH_ALGORITHMS.find(
 		(algorithm) => algorithm.id === session.algorithm
@@ -44,7 +44,7 @@ export default function SearchAlgorithmSelector() {
 							key={algorithm.id}
 							onClick={() => {
 								const currentAlgorithm = algorithm.id
-								actions.algorithm.change(algorithm.id)
+								// actions.algorithm.change(algorithm.id)
 
 								updateAlgorithmIntent(currentAlgorithm)
 								setIsOpen(false)

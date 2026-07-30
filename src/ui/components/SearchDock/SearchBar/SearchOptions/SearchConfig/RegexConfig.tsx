@@ -2,7 +2,7 @@ import { updateRegexCaseSensitive } from "../../../../../sendIntent"
 import { useSearchSession } from "../../../../../session/useSearchSession"
 
 export function RegexConfig() {
-	const { session, actions } = useSearchSession()
+	const { session } = useSearchSession()
 
 	return (
 		<>
@@ -15,7 +15,7 @@ export function RegexConfig() {
 					onChange={(e) => {
 						const checked = e.target.checked
 						updateRegexCaseSensitive(checked)
-						actions.regex.setCaseSensitive(checked)
+						// actions.regex.setCaseSensitive(checked)
 					}}
 				/>
 				Case Sensitive

@@ -25,7 +25,7 @@ const SEARCH_MODE: {
 
 export default function SearchModeSelector() {
 	const [isOpen, setIsOpen] = useState(false)
-	const { session, actions } = useSearchSession()
+	const { session } = useSearchSession()
 
 	const selectedMode = SEARCH_MODE.find(
 		(mode) => mode.id === session.mode
@@ -44,7 +44,7 @@ export default function SearchModeSelector() {
 							key={mode.id}
 							onClick={() => {
 								const currentMode = mode.id
-								actions.mode.change(currentMode)
+								// actions.mode.change(currentMode)
 
 								updateModeIntent(currentMode)
 								setIsOpen(false)

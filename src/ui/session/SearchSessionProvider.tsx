@@ -1,15 +1,15 @@
-import { useMemo, useState, type ReactNode } from "react"
+import { useEffect, useMemo, useState, type ReactNode } from "react"
 import { SearchSessionContext } from "./SearchSessionContext"
 import type {
 	SearchSession,
-	SearchAlgorithm,
-	SearchMode,
+	// SearchAlgorithm,
+	// SearchMode,
 } from "../../shared/messages/session/SearchSession"
 import type {
 	SearchSessionContextValue,
-	SearchSessionActions,
+	// SearchSessionActions,
 } from "./SearchSessionContextValue"
-// import type { SessionResponse } from "../../shared/messages/intents"
+import type { SessionResponse } from "../../shared/messages/intents"
 
 type SearchSessionProviderProps = {
 	children: ReactNode
@@ -21,101 +21,112 @@ export function SearchSessionProvider({
 	initialSession,
 }: SearchSessionProviderProps) {
 	const [session, setSession] = useState<SearchSession>(initialSession)
-	const actions = useMemo<SearchSessionActions>(
-		() => ({
-			query: {
-				change(query: string) {
-					setSession((previous) => ({
-						...previous,
-						query,
-					}))
-				},
-			},
+	// const actions = useMemo<SearchSessionActions>(
+	// 	() => ({
+	// 		query: {
+	// 			change(query: string) {
+	// 				setSession((previous) => ({
+	// 					...previous,
+	// 					query,
+	// 				}))
+	// 			},
+	// 		},
 
-			mode: {
-				change(mode: SearchMode) {
-					setSession((previous) => ({
-						...previous,
-						mode,
-					}))
-				},
-			},
+	// 		mode: {
+	// 			change(mode: SearchMode) {
+	// 				setSession((previous) => ({
+	// 					...previous,
+	// 					mode,
+	// 				}))
+	// 			},
+	// 		},
 
-			algorithm: {
-				change(algorithm: SearchAlgorithm) {
-					setSession((previous) => ({
-						...previous,
-						algorithm,
-					}))
-				},
-			},
+	// 		algorithm: {
+	// 			change(algorithm: SearchAlgorithm) {
+	// 				setSession((previous) => ({
+	// 					...previous,
+	// 					algorithm,
+	// 				}))
+	// 			},
+	// 		},
 
-			literal: {
-				setWholeWord(enabled: boolean) {
-					setSession((previous) => ({
-						...previous,
+	// 		literal: {
+	// 			setWholeWord(enabled: boolean) {
+	// 				setSession((previous) => ({
+	// 					...previous,
 
-						config: {
-							...previous.config,
+	// 					config: {
+	// 						...previous.config,
 
-							literal: {
-								...previous.config.literal,
+	// 						literal: {
+	// 							...previous.config.literal,
 
-								wholeWord: enabled,
-							},
-						},
-					}))
-				},
+	// 							wholeWord: enabled,
+	// 						},
+	// 					},
+	// 				}))
+	// 			},
 
-				setCaseSensitive(enabled: boolean) {
-					setSession((previous) => ({
-						...previous,
+	// 			setCaseSensitive(enabled: boolean) {
+	// 				setSession((previous) => ({
+	// 					...previous,
 
-						config: {
-							...previous.config,
+	// 					config: {
+	// 						...previous.config,
 
-							literal: {
-								...previous.config.literal,
+	// 						literal: {
+	// 							...previous.config.literal,
 
-								caseSensitive: enabled,
-							},
-						},
-					}))
-				},
-			},
+	// 							caseSensitive: enabled,
+	// 						},
+	// 					},
+	// 				}))
+	// 			},
+	// 		},
 
-			regex: {
-				setCaseSensitive(enabled: boolean) {
-					setSession((previous) => ({
-						...previous,
+	// 		regex: {
+	// 			setCaseSensitive(enabled: boolean) {
+	// 				setSession((previous) => ({
+	// 					...previous,
 
-						config: {
-							...previous.config,
+	// 					config: {
+	// 						...previous.config,
 
-							regex: {
-								...previous.config.regex,
+	// 						regex: {
+	// 							...previous.config.regex,
 
-								caseSensitive: enabled,
-							},
-						},
-					}))
-				},
-			},
-		}),
-		[]
-	)
+	// 							caseSensitive: enabled,
+	// 						},
+	// 					},
+	// 				}))
+	// 			},
+	// 		},
+	// 	}),
+	// 	[]
+	// )
 
 	const value = useMemo<SearchSessionContextValue>(
 		() => ({
 			session,
-			actions,
 		}),
-		[session, actions]
+		[
+			session,
+			// , actions
+		]
 	)
 
-	// chrome.runtime.onMessage.addListener((message: SessionResponse) => {
-	// 	setSession(message.searchSession)
-	// })
+	useEffect(() => {
+		function handleMessage(searchSession: SessionResponse) {
+			console.log(searchSession)
+			setSession(searchSession.searchSession)
+		}
+
+		chrome.runtime.onMessage.addListener(handleMessage)
+
+		return () => {
+			chrome.runtime.onMessage.removeListener(handleMessage)
+		}
+	}, [])
 
 	return (
 		<SearchSessionContext.Provider value={value}>

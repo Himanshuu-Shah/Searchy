@@ -65,10 +65,17 @@ function handleIntent(message: Intent) {
 	}
 }
 
+function publishSession(tabId: number) {
+	chrome.tabs.sendMessage(tabId, {
+		success: true,
+		searchSession,
+	} satisfies SessionResponse)
+}
+
 chrome.runtime.onMessage.addListener(
 	(
 		message: Intent,
-		_sender,
+		sender,
 		sendResponse: (
 			response: SessionResponse | SuccessResponse | ErrorResponse
 		) => void
@@ -78,6 +85,13 @@ chrome.runtime.onMessage.addListener(
 				const response = handleIntent(message)
 				console.log(searchSession)
 				sendResponse(response)
+
+				if (!sender.tab?.id) {
+					return
+				}
+				publishSession(sender.tab.id)
+
+				break
 		}
 	}
 )
