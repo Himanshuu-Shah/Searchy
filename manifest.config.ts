@@ -5,7 +5,7 @@ export default defineManifest({
 
 	name: "Searchy",
 
-	version: "0.3.2",
+	version: "0.3.4",
 
 	description: "Enhanced Find in Page.",
 
