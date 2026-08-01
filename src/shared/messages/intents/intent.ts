@@ -21,13 +21,13 @@ export type Intent =
 	| UpdateLiteralWholeWord
 	| UpdateRegexCaseSensitive
 
-export type SuccessResponse = {
-	success: true
+export type Session = {
+	type: "session"
+	searchSession: SearchSession
 }
 
-export type SessionResponse = {
+export type SuccessResponse = {
 	success: true
-	searchSession: SearchSession
 }
 
 export type ErrorResponse = {

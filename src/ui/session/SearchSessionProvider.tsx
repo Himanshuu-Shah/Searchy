@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react"
 import { SearchSessionContext } from "./SearchSessionContext"
-import type {
-	SearchSession,
-	// SearchAlgorithm,
-	// SearchMode,
-} from "../../shared/messages/session/SearchSession"
-import type {
-	SearchSessionContextValue,
-	// SearchSessionActions,
-} from "./SearchSessionContextValue"
-import type { SessionResponse } from "../../shared/messages/intents"
+import type { SearchSession } from "../../shared/messages/session/SearchSession"
+import type { SearchSessionContextValue } from "./SearchSessionContextValue"
+import type { Session } from "../../shared/messages/intents/intent"
 
 type SearchSessionProviderProps = {
 	children: ReactNode
@@ -21,104 +14,18 @@ export function SearchSessionProvider({
 	initialSession,
 }: SearchSessionProviderProps) {
 	const [session, setSession] = useState<SearchSession>(initialSession)
-	// const actions = useMemo<SearchSessionActions>(
-	// 	() => ({
-	// 		query: {
-	// 			change(query: string) {
-	// 				setSession((previous) => ({
-	// 					...previous,
-	// 					query,
-	// 				}))
-	// 			},
-	// 		},
-
-	// 		mode: {
-	// 			change(mode: SearchMode) {
-	// 				setSession((previous) => ({
-	// 					...previous,
-	// 					mode,
-	// 				}))
-	// 			},
-	// 		},
-
-	// 		algorithm: {
-	// 			change(algorithm: SearchAlgorithm) {
-	// 				setSession((previous) => ({
-	// 					...previous,
-	// 					algorithm,
-	// 				}))
-	// 			},
-	// 		},
-
-	// 		literal: {
-	// 			setWholeWord(enabled: boolean) {
-	// 				setSession((previous) => ({
-	// 					...previous,
-
-	// 					config: {
-	// 						...previous.config,
-
-	// 						literal: {
-	// 							...previous.config.literal,
-
-	// 							wholeWord: enabled,
-	// 						},
-	// 					},
-	// 				}))
-	// 			},
-
-	// 			setCaseSensitive(enabled: boolean) {
-	// 				setSession((previous) => ({
-	// 					...previous,
-
-	// 					config: {
-	// 						...previous.config,
-
-	// 						literal: {
-	// 							...previous.config.literal,
-
-	// 							caseSensitive: enabled,
-	// 						},
-	// 					},
-	// 				}))
-	// 			},
-	// 		},
-
-	// 		regex: {
-	// 			setCaseSensitive(enabled: boolean) {
-	// 				setSession((previous) => ({
-	// 					...previous,
-
-	// 					config: {
-	// 						...previous.config,
-
-	// 						regex: {
-	// 							...previous.config.regex,
-
-	// 							caseSensitive: enabled,
-	// 						},
-	// 					},
-	// 				}))
-	// 			},
-	// 		},
-	// 	}),
-	// 	[]
-	// )
 
 	const value = useMemo<SearchSessionContextValue>(
 		() => ({
 			session,
 		}),
-		[
-			session,
-			// , actions
-		]
+		[session]
 	)
 
 	useEffect(() => {
-		function handleMessage(searchSession: SessionResponse) {
-			console.log(searchSession)
-			setSession(searchSession.searchSession)
+		function handleMessage(message: Session) {
+			if (message.type !== "session") return
+			setSession(message.searchSession)
 		}
 
 		chrome.runtime.onMessage.addListener(handleMessage)

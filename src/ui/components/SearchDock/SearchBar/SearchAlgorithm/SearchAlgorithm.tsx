@@ -44,7 +44,6 @@ export default function SearchAlgorithmSelector() {
 							key={algorithm.id}
 							onClick={() => {
 								const currentAlgorithm = algorithm.id
-								// actions.algorithm.change(algorithm.id)
 
 								updateAlgorithmIntent(currentAlgorithm)
 								setIsOpen(false)

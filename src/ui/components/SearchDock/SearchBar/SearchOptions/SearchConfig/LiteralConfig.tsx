@@ -17,7 +17,6 @@ export function LiteralConfig() {
 					checked={session.config.literal.wholeWord}
 					onChange={(e) => {
 						const checked = e.target.checked
-						// actions.literal.setWholeWord(checked)
 						updateLiteralWholeWord(checked)
 					}}
 				/>
@@ -32,7 +31,6 @@ export function LiteralConfig() {
 					checked={session.config.literal.caseSensitive}
 					onChange={(e) => {
 						const checked = e.target.checked
-						// actions.literal.setCaseSensitive(checked)
 						updateLiteralCaseSensitive(checked)
 					}}
 				/>

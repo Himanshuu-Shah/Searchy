@@ -1,14 +1,16 @@
-import { MessageType, type ExtensionMessage } from "../shared/messages/messages"
+import { MessageType } from "../shared/messages/messages"
 import { searchText } from "./search/searchText"
 import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch"
 import type { SearchMatch } from "./search/match"
 import { scrollToMatch } from "./navigation/scrollToMatch"
-import "./highlight/highlight.css"
 import { clearHighlights } from "./highlight/clearHighlight"
-import type { SearchConfig } from "../shared/search/searchConfigs"
 import { displaySearchResults } from "./search/displaySearchResults"
 import { beginElementSelection } from "./dom/selectElement"
 import { mountSearchy } from "../ui/mountSearchy"
+import type { Command } from "../shared/messages/commands/command"
+import { CommandType } from "../shared/messages/commands/commandTypes"
+import type { SearchPayload } from "../shared/messages/commands/runSearch"
+import "./highlight/highlight.css"
 
 console.log("Content script injected.")
 mountSearchy()
@@ -34,15 +36,12 @@ let selectedScope: {
 
 // The latest search request received from the popup.
 // Stored so the search can be re-run when the scope changes.
-let currentSearch: {
-	query: string
-	searchConfig: SearchConfig
-} | null = null
+let currentSearch: SearchPayload | null = null
 
 // Cleanup function for the temporary element-selection listener.
 // Non-null means the extension is currently waiting for the user
 // to choose a search scope.
-let stopSelection: (() => void) | null = null //
+let stopSelection: (() => void) | null = null
 
 // ---------- Helpers ----------
 
@@ -56,12 +55,7 @@ let stopSelection: (() => void) | null = null //
 function rerunSearch() {
 	if (!currentSearch) return
 
-	matches = searchText(
-		searchNode,
-		currentSearch.query,
-		currentSearch.searchConfig
-	)
-
+	matches = searchText(searchNode, currentSearch)
 	currentIndex = matches.length > 0 ? 0 : -1
 
 	displaySearchResults(matches, currentIndex)
@@ -103,14 +97,12 @@ function selectScope(element: HTMLElement) {
 
 // ---------- Messages ----------
 
-chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
-	switch (message.type) {
-		case MessageType.SEARCH:
-			currentSearch = {
-				query: message.query,
-				searchConfig: message.searchConfig,
-			}
+chrome.runtime.onMessage.addListener((message: Command) => {
+	if (message.type !== "command") return
 
+	switch (message.command) {
+		case CommandType.RUN_SEARCH:
+			currentSearch = message.payload
 			rerunSearch()
 
 			break

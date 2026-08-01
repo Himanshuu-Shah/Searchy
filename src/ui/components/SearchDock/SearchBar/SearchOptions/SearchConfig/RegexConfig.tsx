@@ -15,7 +15,6 @@ export function RegexConfig() {
 					onChange={(e) => {
 						const checked = e.target.checked
 						updateRegexCaseSensitive(checked)
-						// actions.regex.setCaseSensitive(checked)
 					}}
 				/>
 				Case Sensitive

@@ -44,7 +44,6 @@ export default function SearchModeSelector() {
 							key={mode.id}
 							onClick={() => {
 								const currentMode = mode.id
-								// actions.mode.change(currentMode)
 
 								updateModeIntent(currentMode)
 								setIsOpen(false)

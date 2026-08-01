@@ -1,7 +1,7 @@
-import type { SearchConfig } from "../../shared/search/searchConfigs"
 import { findLiteralMatches } from "./literalSearch"
 import { findRegexMatches } from "./regrexSearch"
 import type { MatchLocation } from "./match"
+import type { SearchPayload } from "../../shared/messages/commands/runSearch"
 
 /**
  * Dispatches the search request to the selected algorithm.
@@ -9,13 +9,12 @@ import type { MatchLocation } from "./match"
 
 export function findMatches(
 	text: string,
-	query: string,
-	search: SearchConfig
+	search: SearchPayload
 ): MatchLocation[] {
 	switch (search.algorithm) {
 		case "literal":
-			return findLiteralMatches(text, query, search.config)
+			return findLiteralMatches(text, search.query, search.config)
 		case "regex":
-			return findRegexMatches(text, query, search.config)
+			return findRegexMatches(text, search.query, search.config)
 	}
 }

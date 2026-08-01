@@ -1,17 +1,17 @@
 import type {
 	Intent,
-	SessionResponse,
+	Session,
 	SuccessResponse,
-} from "../shared/messages/intents"
+} from "../shared/messages/intents/intent"
 import type { SearchSession } from "../shared/messages/session/SearchSession"
 
 export function processIntent(message: Intent, session: SearchSession) {
 	switch (message.intent) {
 		case "INITIATE_SESSION":
 			return {
-				success: true,
+				type: "session",
 				searchSession: session,
-			} satisfies SessionResponse
+			} satisfies Session
 
 		case "SET_QUERY":
 			session.query = message.payload.query

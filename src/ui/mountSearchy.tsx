@@ -33,7 +33,7 @@ export async function mountSearchy() {
 
 	// Fetch initial search session from the background script
 	const response = await initiateSession()
-	if (!response.success) {
+	if ("error" in response) {
 		throw new Error(response.error)
 	}
 

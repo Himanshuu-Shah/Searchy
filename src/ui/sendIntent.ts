@@ -1,4 +1,4 @@
-import type { Intent } from "../shared/messages/intents"
+import type { Intent } from "../shared/messages/intents/intent"
 import type { InitiateSession } from "../shared/messages/intents/initiateSession"
 import type { UpdateAlgorithm } from "../shared/messages/intents/updateAlgorithm"
 import type { UpdateMode } from "../shared/messages/intents/updateMode"
@@ -14,17 +14,15 @@ import type {
 
 import type {
 	ErrorResponse,
-	SessionResponse,
+	Session,
 	SuccessResponse,
-} from "../shared/messages/intents/index"
+} from "../shared/messages/intents/intent"
 
 function sendMessage<T>(message: Intent): Promise<T> {
 	return chrome.runtime.sendMessage(message)
 }
 
-export async function initiateSession(): Promise<
-	SessionResponse | ErrorResponse
-> {
+export async function initiateSession(): Promise<Session | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
 		intent: "INITIATE_SESSION",

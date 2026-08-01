@@ -1,9 +1,10 @@
-import type { Intent } from "../shared/messages/intents"
+import type { Intent } from "../shared/messages/intents/intent"
 import type {
 	ErrorResponse,
-	SessionResponse,
+	Session,
 	SuccessResponse,
-} from "../shared/messages/intents/index"
+} from "../shared/messages/intents/intent"
+import { sendCommand } from "./commandRouter"
 import { processIntent } from "./intentProcessor"
 import { publishSession } from "./publisher"
 import { getOrCreateSession } from "./sessionManager"
@@ -15,7 +16,7 @@ chrome.runtime.onMessage.addListener(
 		message: Intent,
 		sender,
 		sendResponse: (
-			response: SessionResponse | SuccessResponse | ErrorResponse
+			response: Session | SuccessResponse | ErrorResponse
 		) => void
 	) => {
 		switch (message.type) {
@@ -29,10 +30,13 @@ chrome.runtime.onMessage.addListener(
 				const session = getOrCreateSession(tabId)
 				const response = processIntent(message, session)
 
-				console.log(session)
-
 				sendResponse(response)
-				publishSession(tabId, session)
+
+				if (message.intent !== "INITIATE_SESSION") {
+					publishSession(tabId, session)
+				}
+
+				sendCommand(tabId, session, message.intent)
 
 				break
 		}

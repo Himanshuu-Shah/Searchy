@@ -1,4 +1,4 @@
-import type { SearchConfig } from "../../shared/search/searchConfigs"
+import type { SearchPayload } from "../../shared/messages/commands/runSearch"
 import { findMatches } from "./findmatches"
 import { type SearchMatch } from "./match"
 
@@ -9,10 +9,9 @@ import { type SearchMatch } from "./match"
 
 export function searchText(
 	searchNode: ParentNode,
-	query: string,
-	searchConfig: SearchConfig
+	search: SearchPayload
 ): SearchMatch[] {
-	if (!query.trim()) {
+	if (!search.query.trim()) {
 		return []
 	}
 
@@ -24,7 +23,7 @@ export function searchText(
 
 	while (node) {
 		const text = node.textContent || ""
-		const matches = findMatches(text, query, searchConfig)
+		const matches = findMatches(text, search)
 
 		for (const match of matches) {
 			results.push({
