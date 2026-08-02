@@ -111,3 +111,24 @@ export async function updateRegexCaseSensitive(
 		payload: { enabled: checked },
 	})
 }
+
+export async function toggleScopeSelection(
+	checked: boolean
+): Promise<SuccessResponse | ErrorResponse> {
+	return sendMessage({
+		type: "intent",
+		intent: IntentType.TOGGLE_SCOPE_SELECTION,
+		payload: {
+			enabled: checked,
+		},
+	})
+}
+
+export async function clearSelectedScope(): Promise<
+	SuccessResponse | ErrorResponse
+> {
+	return sendMessage({
+		type: "intent",
+		intent: IntentType.CLEAR_SCOPE,
+	})
+}

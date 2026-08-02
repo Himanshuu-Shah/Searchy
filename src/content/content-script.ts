@@ -2,7 +2,6 @@ import { searchText } from "./search/searchText"
 import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch"
 import type { SearchMatch } from "./search/match"
 import { scrollToMatch } from "./navigation/scrollToMatch"
-import { clearHighlights } from "./highlight/clearHighlight"
 import { displaySearchResults } from "./search/displaySearchResults"
 import { beginElementSelection } from "./dom/selectElement"
 import { mountSearchy } from "../ui/mountSearchy"
@@ -10,7 +9,11 @@ import type { Command } from "../shared/messages/commands/command"
 import { CommandType } from "../shared/messages/commands/commandTypes"
 import type { SearchPayload } from "../shared/messages/commands/runSearch"
 import "./highlight/highlight.css"
-import { notifyCurrentIndex, notifySearchResults } from "./sendEvent"
+import {
+	notifyCurrentIndex,
+	notifyScopeSelection,
+	notifySearchResults,
+} from "./sendEvent"
 
 console.log("Content script injected.")
 mountSearchy()
@@ -131,14 +134,6 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 
 			break
 
-		case CommandType.CLEAR_HIGHLIGHTS:
-			currentSearch = null
-			matches = []
-			currentIndex = -1
-			clearHighlights()
-
-			break
-
 		case CommandType.TOGGLE_SCOPE_SELECTION:
 			clearSelectedScope()
 
@@ -154,6 +149,9 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 
 				selectScope(element)
 				rerunSearch()
+
+				notifySearchResults(matches.length, currentIndex)
+				notifyScopeSelection(false)
 			})
 
 			break
@@ -163,6 +161,7 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 
 			searchNode = document.body
 			rerunSearch()
+			notifySearchResults(matches.length, currentIndex)
 
 			break
 	}

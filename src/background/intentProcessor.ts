@@ -46,5 +46,12 @@ export function processIntent(
 		case IntentType.SET_REGEXCASESENSITIVE:
 			session.config.regex.caseSensitive = message.payload.enabled
 			return { success: true } satisfies SuccessResponse
+
+		case IntentType.TOGGLE_SCOPE_SELECTION:
+			session.scopeSelection.enabled = message.payload.enabled
+			return { success: true } satisfies SuccessResponse
+
+		case IntentType.CLEAR_SCOPE:
+			return { success: true } satisfies SuccessResponse
 	}
 }

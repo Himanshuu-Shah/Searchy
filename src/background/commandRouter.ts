@@ -1,8 +1,10 @@
+import type { ClearScope } from "../shared/messages/commands/clearScope"
 import type { Command } from "../shared/messages/commands/command"
 import { CommandType } from "../shared/messages/commands/commandTypes"
 import type { NextResult } from "../shared/messages/commands/nextResult"
-import type { PreviousResult } from "../shared/messages/commands/PreviousResult"
+import type { PreviousResult } from "../shared/messages/commands/previousResult"
 import type { RunSearch } from "../shared/messages/commands/runSearch"
+import type { ToggleScopeSelection } from "../shared/messages/commands/toggleScopeSelection"
 import type { Intent } from "../shared/messages/intents/intent"
 import { IntentType } from "../shared/messages/intents/intentTypes"
 import type { SearchSession } from "../shared/messages/session/SearchSession"
@@ -35,6 +37,12 @@ function createCommand(
 
 		case IntentType.SET_REGEXCASESENSITIVE:
 			return createRunSearch(session)
+
+		case IntentType.TOGGLE_SCOPE_SELECTION:
+			return createToggleScopeSelection()
+
+		case IntentType.CLEAR_SCOPE:
+			return createClearScope()
 
 		case IntentType.SET_MODE:
 			return null
@@ -78,6 +86,20 @@ function createPreviousResult(): PreviousResult {
 	return {
 		type: "command",
 		command: CommandType.PREVIOUS_RESULT,
+	}
+}
+
+function createToggleScopeSelection(): ToggleScopeSelection {
+	return {
+		type: "command",
+		command: CommandType.TOGGLE_SCOPE_SELECTION,
+	}
+}
+
+function createClearScope(): ClearScope {
+	return {
+		type: "command",
+		command: CommandType.CLEAR_SCOPE,
 	}
 }
 

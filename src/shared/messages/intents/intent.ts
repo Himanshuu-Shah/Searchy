@@ -8,6 +8,7 @@ import type { UpdateMode } from "./updateMode"
 import type { NavigateNext, NavigatePrevious } from "./updateNavigation"
 import type { UpdateQuery } from "./updateQuery"
 import type { UpdateRegexCaseSensitive } from "./updateRegexConfig"
+import type { ClearScope, ToggleScopeSelection } from "./updateScope"
 
 export type Intent =
 	| UpdateQuery
@@ -19,3 +20,5 @@ export type Intent =
 	| UpdateLiteralCaseSensitive
 	| UpdateLiteralWholeWord
 	| UpdateRegexCaseSensitive
+	| ToggleScopeSelection
+	| ClearScope

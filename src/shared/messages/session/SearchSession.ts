@@ -26,4 +26,8 @@ export interface SearchSession {
 		totalMatches: number
 		currentIndex: number
 	}
+
+	scopeSelection: {
+		enabled: boolean
+	}
 }

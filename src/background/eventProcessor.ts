@@ -19,5 +19,10 @@ export function processEvent(
 			return {
 				success: true,
 			}
+		case EventType.SCOPE_SELECTION_CHANGED:
+			session.scopeSelection.enabled = message.payload.enabled
+			return {
+				success: true,
+			}
 	}
 }

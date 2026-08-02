@@ -39,6 +39,7 @@ export async function mountSearchy() {
 
 	// Mount the React application.
 	const root = createRoot(container)
+	console.log(response.searchSession)
 	root.render(<App initialSession={response.searchSession} />)
 
 	// Return a cleanup function.

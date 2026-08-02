@@ -20,6 +20,9 @@ function createDefaultSession(): SearchSession {
 			totalMatches: 0,
 			currentIndex: 0,
 		},
+		scopeSelection: {
+			enabled: false,
+		},
 	}
 }
 

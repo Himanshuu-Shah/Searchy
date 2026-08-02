@@ -74,6 +74,7 @@ export function beginElementSelection(
 		event.stopImmediatePropagation()
 
 		const target = event.target
+		console.log("selected", target)
 
 		if (!(target instanceof HTMLElement)) {
 			return
@@ -85,6 +86,7 @@ export function beginElementSelection(
 
 	document.addEventListener("mouseover", handleHover, true)
 	document.addEventListener("click", handleClick, true)
+	// notifyScopeSelection(true)
 
 	return cleanup
 }

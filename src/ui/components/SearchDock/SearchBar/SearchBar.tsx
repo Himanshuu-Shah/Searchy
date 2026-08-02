@@ -3,6 +3,7 @@ import SearchInput from "./SearchInput/SearchInput"
 import Navigation from "./Navigation/Navigation"
 import SearchModeSelector from "./SearchMode/SearchMode"
 import { SearchOptions } from "./SearchOptions/SearchOptions"
+import { ScopeControls } from "./ScopeControls/ScopeControls"
 import "./SearchBar.css"
 
 export default function SearchBar() {
@@ -12,6 +13,7 @@ export default function SearchBar() {
 			<SearchInput />
 			<Navigation />
 			<SearchOptions />
+			<ScopeControls />
 			<SearchModeSelector />
 		</div>
 	)

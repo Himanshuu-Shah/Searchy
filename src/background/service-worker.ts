@@ -22,6 +22,10 @@ chrome.runtime.onMessage.addListener(
 			response: Session | SuccessResponse | ErrorResponse
 		) => void
 	) => {
+		console.log(
+			message.type,
+			message.type === "intent" ? message.intent : message.event
+		)
 		switch (message.type) {
 			case "intent": {
 				if (!sender.tab?.id) {
@@ -55,7 +59,6 @@ chrome.runtime.onMessage.addListener(
 				const response = processEvent(message, session)
 
 				sendResponse(response)
-
 				publishSession(tabId, session)
 			}
 		}

@@ -25,6 +25,7 @@ export function SearchSessionProvider({
 	useEffect(() => {
 		function handleMessage(message: Session) {
 			if (message.type !== "session") return
+			console.log(message.searchSession)
 			setSession(message.searchSession)
 		}
 
