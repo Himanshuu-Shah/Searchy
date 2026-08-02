@@ -13,9 +13,12 @@
  * Returns a cleanup function that cancels the session before an
  * element is selected.
  */
-export function beginElementSelection(
-	onSelect: (element: HTMLElement) => void
-): () => void {
+type SelectionOptions = {
+	onSelect(element: HTMLElement): void
+	shouldIgnore?(event: MouseEvent): boolean
+}
+
+export function beginElementSelection(options: SelectionOptions): () => void {
 	type HoverState = {
 		element: HTMLElement
 		outline: string
@@ -23,6 +26,8 @@ export function beginElementSelection(
 	} | null
 
 	let hovered: HoverState = null
+
+	const { onSelect, shouldIgnore } = options
 
 	/**
 	 * Restores the previously hovered element's original outline.
@@ -37,6 +42,10 @@ export function beginElementSelection(
 	}
 
 	function handleHover(event: MouseEvent) {
+		if (shouldIgnore?.(event)) {
+			restoreHover()
+			return
+		}
 		event.preventDefault()
 		event.stopPropagation()
 		event.stopImmediatePropagation()
@@ -69,12 +78,15 @@ export function beginElementSelection(
 	}
 
 	function handleClick(event: MouseEvent) {
+		if (shouldIgnore?.(event)) {
+			return
+		}
+
 		event.preventDefault()
 		event.stopPropagation()
 		event.stopImmediatePropagation()
 
 		const target = event.target
-		console.log("selected", target)
 
 		if (!(target instanceof HTMLElement)) {
 			return
@@ -86,7 +98,6 @@ export function beginElementSelection(
 
 	document.addEventListener("mouseover", handleHover, true)
 	document.addEventListener("click", handleClick, true)
-	// notifyScopeSelection(true)
 
 	return cleanup
 }

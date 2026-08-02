@@ -135,6 +135,8 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 			break
 
 		case CommandType.TOGGLE_SCOPE_SELECTION:
+			const host: HTMLElement = document.getElementById("searchy-root")!
+
 			clearSelectedScope()
 
 			if (stopSelection) {
@@ -144,14 +146,19 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 				break
 			}
 
-			stopSelection = beginElementSelection((element: HTMLElement) => {
-				stopSelection = null
+			stopSelection = beginElementSelection({
+				onSelect(element: HTMLElement) {
+					stopSelection = null
 
-				selectScope(element)
-				rerunSearch()
+					selectScope(element)
+					rerunSearch()
 
-				notifySearchResults(matches.length, currentIndex)
-				notifyScopeSelection(false)
+					notifySearchResults(matches.length, currentIndex)
+					notifyScopeSelection(false)
+				},
+				shouldIgnore(event) {
+					return event.composedPath().includes(host)
+				},
 			})
 
 			break
