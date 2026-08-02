@@ -16,7 +16,8 @@ import type {
 	ErrorResponse,
 	Session,
 	SuccessResponse,
-} from "../shared/messages/intents/intent"
+} from "../shared/messages/response/response"
+import { IntentType } from "../shared/messages/intents/intentTypes"
 
 function sendMessage<T>(message: Intent): Promise<T> {
 	return chrome.runtime.sendMessage(message)
@@ -25,7 +26,7 @@ function sendMessage<T>(message: Intent): Promise<T> {
 export async function initiateSession(): Promise<Session | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: "INITIATE_SESSION",
+		intent: IntentType.INITIATE_SESSION,
 	} satisfies InitiateSession)
 }
 
@@ -34,7 +35,7 @@ export async function updateAlgorithmIntent(
 ): Promise<SuccessResponse | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: "SET_ALGORITHM",
+		intent: IntentType.SET_ALGORITHM,
 		payload: {
 			algorithm: algorithm,
 		},
@@ -46,7 +47,7 @@ export async function updateQueryIntent(
 ): Promise<SuccessResponse | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: "SET_QUERY",
+		intent: IntentType.SET_QUERY,
 		payload: { query: query },
 	} satisfies UpdateQuery)
 }
@@ -56,7 +57,7 @@ export async function navigateNextIntent(): Promise<
 > {
 	return sendMessage({
 		type: "intent",
-		intent: "NEXT_RESULT",
+		intent: IntentType.NEXT_RESULT,
 	} satisfies NavigateNext)
 }
 
@@ -65,7 +66,7 @@ export async function navigatePreviousIntent(): Promise<
 > {
 	return sendMessage({
 		type: "intent",
-		intent: "PREVIOUS_RESULT",
+		intent: IntentType.PREVIOUS_RESULT,
 	} satisfies NavigatePrevious)
 }
 
@@ -74,7 +75,7 @@ export async function updateModeIntent(
 ): Promise<SuccessResponse | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: "SET_MODE",
+		intent: IntentType.SET_MODE,
 		payload: {
 			mode: mode,
 		},
@@ -86,7 +87,7 @@ export async function updateLiteralCaseSensitive(
 ): Promise<SuccessResponse | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: "SET_LITERALCASESENSITIVE",
+		intent: IntentType.SET_LITERALCASESENSITIVE,
 		payload: { enabled: checked },
 	})
 }
@@ -96,7 +97,7 @@ export async function updateLiteralWholeWord(
 ): Promise<SuccessResponse | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: "SET_LITERALWHOLEWORD",
+		intent: IntentType.SET_LITERALWHOLEWORD,
 		payload: { enabled: checked },
 	})
 }
@@ -106,7 +107,7 @@ export async function updateRegexCaseSensitive(
 ): Promise<SuccessResponse | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: "SET_REGEXCASESENSITIVE",
+		intent: IntentType.SET_REGEXCASESENSITIVE,
 		payload: { enabled: checked },
 	})
 }

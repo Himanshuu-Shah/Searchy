@@ -1,4 +1,3 @@
-import type { SearchSession } from "../session/SearchSession"
 import type { InitiateSession } from "./initiateSession"
 import type { UpdateAlgorithm } from "./updateAlgorithm"
 import type {
@@ -20,17 +19,3 @@ export type Intent =
 	| UpdateLiteralCaseSensitive
 	| UpdateLiteralWholeWord
 	| UpdateRegexCaseSensitive
-
-export type Session = {
-	type: "session"
-	searchSession: SearchSession
-}
-
-export type SuccessResponse = {
-	success: true
-}
-
-export type ErrorResponse = {
-	success: false
-	error: string
-}

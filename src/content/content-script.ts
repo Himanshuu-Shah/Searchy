@@ -1,4 +1,3 @@
-import { MessageType } from "../shared/messages/messages"
 import { searchText } from "./search/searchText"
 import { highlightCurrentMatch } from "./highlight/highlightCurrentMatch"
 import type { SearchMatch } from "./search/match"
@@ -11,6 +10,7 @@ import type { Command } from "../shared/messages/commands/command"
 import { CommandType } from "../shared/messages/commands/commandTypes"
 import type { SearchPayload } from "../shared/messages/commands/runSearch"
 import "./highlight/highlight.css"
+import { notifyCurrentIndex, notifySearchResults } from "./sendEvent"
 
 console.log("Content script injected.")
 mountSearchy()
@@ -105,27 +105,33 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 			currentSearch = message.payload
 			rerunSearch()
 
+			notifySearchResults(matches.length, currentIndex)
+
 			break
 
-		case MessageType.NEXT_RESULT:
+		case CommandType.NEXT_RESULT:
 			if (matches.length === 0) break
 
 			currentIndex = (currentIndex + 1) % matches.length
 			highlightCurrentMatch(matches[currentIndex])
 			scrollToMatch(matches[currentIndex])
 
+			notifyCurrentIndex(currentIndex)
+
 			break
 
-		case MessageType.PREVIOUS_RESULT:
+		case CommandType.PREVIOUS_RESULT:
 			if (matches.length === 0) break
 
 			currentIndex = (currentIndex - 1 + matches.length) % matches.length
 			highlightCurrentMatch(matches[currentIndex])
 			scrollToMatch(matches[currentIndex])
 
+			notifyCurrentIndex(currentIndex)
+
 			break
 
-		case MessageType.CLEAR_HIGHLIGHTS:
+		case CommandType.CLEAR_HIGHLIGHTS:
 			currentSearch = null
 			matches = []
 			currentIndex = -1
@@ -133,7 +139,7 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 
 			break
 
-		case MessageType.TOGGLE_SCOPE_SELECTION:
+		case CommandType.TOGGLE_SCOPE_SELECTION:
 			clearSelectedScope()
 
 			if (stopSelection) {
@@ -152,7 +158,7 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 
 			break
 
-		case MessageType.CLEAR_SCOPE:
+		case CommandType.CLEAR_SCOPE:
 			clearSelectedScope()
 
 			searchNode = document.body

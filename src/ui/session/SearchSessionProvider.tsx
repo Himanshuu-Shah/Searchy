@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react"
 import { SearchSessionContext } from "./SearchSessionContext"
 import type { SearchSession } from "../../shared/messages/session/SearchSession"
 import type { SearchSessionContextValue } from "./SearchSessionContextValue"
-import type { Session } from "../../shared/messages/intents/intent"
+import type { Session } from "../../shared/messages/response/response"
 
 type SearchSessionProviderProps = {
 	children: ReactNode

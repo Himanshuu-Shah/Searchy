@@ -16,6 +16,10 @@ function createDefaultSession(): SearchSession {
 				caseSensitive: false,
 			},
 		},
+		results: {
+			totalMatches: 0,
+			currentIndex: 0,
+		},
 	}
 }
 

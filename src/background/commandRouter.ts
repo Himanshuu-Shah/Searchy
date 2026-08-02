@@ -4,6 +4,7 @@ import type { NextResult } from "../shared/messages/commands/nextResult"
 import type { PreviousResult } from "../shared/messages/commands/PreviousResult"
 import type { RunSearch } from "../shared/messages/commands/runSearch"
 import type { Intent } from "../shared/messages/intents/intent"
+import { IntentType } from "../shared/messages/intents/intentTypes"
 import type { SearchSession } from "../shared/messages/session/SearchSession"
 
 function createCommand(
@@ -11,31 +12,31 @@ function createCommand(
 	session: SearchSession
 ): Command | null {
 	switch (intent) {
-		case "INITIATE_SESSION":
+		case IntentType.INITIATE_SESSION:
 			return null
 
-		case "SET_QUERY":
+		case IntentType.SET_QUERY:
 			return createRunSearch(session)
 
-		case "SET_ALGORITHM":
+		case IntentType.SET_ALGORITHM:
 			return createRunSearch(session)
 
-		case "NEXT_RESULT":
+		case IntentType.NEXT_RESULT:
 			return createNextResult()
 
-		case "PREVIOUS_RESULT":
+		case IntentType.PREVIOUS_RESULT:
 			return createPreviousResult()
 
-		case "SET_LITERALCASESENSITIVE":
+		case IntentType.SET_LITERALCASESENSITIVE:
 			return createRunSearch(session)
 
-		case "SET_LITERALWHOLEWORD":
+		case IntentType.SET_LITERALWHOLEWORD:
 			return createRunSearch(session)
 
-		case "SET_REGEXCASESENSITIVE":
+		case IntentType.SET_REGEXCASESENSITIVE:
 			return createRunSearch(session)
 
-		case "SET_MODE":
+		case IntentType.SET_MODE:
 			return null
 	}
 }

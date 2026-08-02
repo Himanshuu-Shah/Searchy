@@ -21,4 +21,9 @@ export interface SearchSession {
 		literal: LiteralConfig
 		regex: RegexConfig
 	}
+
+	results: {
+		totalMatches: number
+		currentIndex: number
+	}
 }
