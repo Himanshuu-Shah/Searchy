@@ -37,7 +37,7 @@ export async function updateAlgorithmIntent(
 		type: "intent",
 		intent: IntentType.SET_ALGORITHM,
 		payload: {
-			algorithm: algorithm,
+			algorithm,
 		},
 	} satisfies UpdateAlgorithm)
 }
@@ -48,7 +48,7 @@ export async function updateQueryIntent(
 	return sendMessage({
 		type: "intent",
 		intent: IntentType.SET_QUERY,
-		payload: { query: query },
+		payload: { query },
 	} satisfies UpdateQuery)
 }
 
@@ -75,9 +75,9 @@ export async function updateModeIntent(
 ): Promise<SuccessResponse | ErrorResponse> {
 	return sendMessage({
 		type: "intent",
-		intent: IntentType.SET_MODE,
+		intent: IntentType.SET_GLOBAL_MODE,
 		payload: {
-			mode: mode,
+			mode,
 		},
 	} satisfies UpdateMode)
 }
@@ -130,5 +130,15 @@ export async function clearSelectedScope(): Promise<
 	return sendMessage({
 		type: "intent",
 		intent: IntentType.CLEAR_SCOPE,
+	})
+}
+
+export async function updateGlobalParticipants(
+	participants: Set<number>
+): Promise<SuccessResponse | ErrorResponse> {
+	return sendMessage({
+		type: "intent",
+		intent: IntentType.SET_GLOBAL_PARTICIPANTS,
+		payload: { participants },
 	})
 }

@@ -1,9 +1,13 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { crx } from "@crxjs/vite-plugin";
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import { crx } from "@crxjs/vite-plugin"
 
-import manifest from "./manifest.config.ts";
+import manifest from "./manifest.config.ts"
 
 export default defineConfig({
-  plugins: [react(), crx({ manifest })],
-});
+	plugins: [react(), crx({ manifest })],
+	build: {
+		sourcemap: true,
+		minify: false, // optional, useful while debugging
+	},
+})

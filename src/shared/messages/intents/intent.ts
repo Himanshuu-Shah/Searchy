@@ -1,5 +1,6 @@
 import type { InitiateSession } from "./initiateSession"
 import type { UpdateAlgorithm } from "./updateAlgorithm"
+import type { UpdateGlobalParticipants } from "./updateGlobalParticipants"
 import type {
 	UpdateLiteralCaseSensitive,
 	UpdateLiteralWholeWord,
@@ -10,15 +11,17 @@ import type { UpdateQuery } from "./updateQuery"
 import type { UpdateRegexCaseSensitive } from "./updateRegexConfig"
 import type { ClearScope, ToggleScopeSelection } from "./updateScope"
 
-export type Intent =
+export type SessionIntent =
 	| UpdateQuery
 	| UpdateAlgorithm
-	| UpdateMode
 	| NavigateNext
 	| NavigatePrevious
-	| InitiateSession
 	| UpdateLiteralCaseSensitive
 	| UpdateLiteralWholeWord
 	| UpdateRegexCaseSensitive
 	| ToggleScopeSelection
 	| ClearScope
+
+export type CoordinatorIntent = UpdateMode | UpdateGlobalParticipants
+
+export type Intent = SessionIntent | InitiateSession | CoordinatorIntent

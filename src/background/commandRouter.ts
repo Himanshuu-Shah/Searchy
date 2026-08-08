@@ -44,8 +44,11 @@ function createCommand(
 		case IntentType.CLEAR_SCOPE:
 			return createClearScope()
 
-		case IntentType.SET_MODE:
-			return null
+		case IntentType.SET_GLOBAL_MODE:
+			return createRunSearch(session)
+
+		case IntentType.SET_GLOBAL_PARTICIPANTS:
+			return createRunSearch(session)
 	}
 }
 
