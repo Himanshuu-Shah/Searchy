@@ -5,68 +5,23 @@ import type {
 } from "../shared/messages/intents/intent"
 import { IntentType } from "../shared/messages/intents/intentTypes"
 import type {
+	ErrorResponse,
 	Session,
 	SuccessResponse,
 } from "../shared/messages/response/response"
 import type { SearchSession } from "../shared/messages/session/SearchSession"
 import { sendCommand } from "./commandRouter"
+import { navigateNext, navigatePrevious } from "./navigationManager"
 import { publishSession } from "./publisher"
 import {
+	getGlobalTotalMatches,
 	getSessionParticipants,
+	getTabResults,
+	isGlobalSessionParticipant,
 	resolveSession,
 	setGlobalMode,
 	setGlobalParticipants,
 } from "./sessionManager"
-
-// export function processIntent(
-// 	message: Intent,
-// 	session: SearchSession
-// ): Session | SuccessResponse {
-// 	switch (message.intent) {
-// 		case IntentType.INITIATE_SESSION:
-// 			return {
-// 				type: "session",
-// 				searchSession: session,
-// 			} satisfies Session
-
-// 		case IntentType.SET_QUERY:
-// 			session.query = message.payload.query
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.SET_ALGORITHM:
-// 			session.algorithm = message.payload.algorithm
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.NEXT_RESULT:
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.PREVIOUS_RESULT:
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.SET_MODE:
-// 			session.mode = message.payload.mode
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.SET_LITERALCASESENSITIVE:
-// 			session.config.literal.caseSensitive = message.payload.enabled
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.SET_LITERALWHOLEWORD:
-// 			session.config.literal.wholeWord = message.payload.enabled
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.SET_REGEXCASESENSITIVE:
-// 			session.config.regex.caseSensitive = message.payload.enabled
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.TOGGLE_SCOPE_SELECTION:
-// 			session.scopeSelection.enabled = message.payload.enabled
-// 			return { success: true } satisfies SuccessResponse
-
-// 		case IntentType.CLEAR_SCOPE:
-// 			return { success: true } satisfies SuccessResponse
-// 	}
-// }
 
 function processSessionIntent(message: SessionIntent, session: SearchSession) {
 	switch (message.intent) {
@@ -76,12 +31,6 @@ function processSessionIntent(message: SessionIntent, session: SearchSession) {
 
 		case IntentType.SET_ALGORITHM:
 			session.algorithm = message.payload.algorithm
-			return { success: true } satisfies SuccessResponse
-
-		case IntentType.NEXT_RESULT:
-			return { success: true } satisfies SuccessResponse
-
-		case IntentType.PREVIOUS_RESULT:
 			return { success: true } satisfies SuccessResponse
 
 		case IntentType.SET_LITERALCASESENSITIVE:
@@ -108,22 +57,18 @@ function processSessionIntent(message: SessionIntent, session: SearchSession) {
 async function processGlobalIntent(message: CoordinatorIntent) {
 	switch (message.intent) {
 		case IntentType.SET_GLOBAL_MODE: {
-			const participants = await setGlobalMode(message.payload.mode)
+			await setGlobalMode(message.payload.mode)
 
 			return {
 				response: { success: true } satisfies SuccessResponse,
-				participants,
 			}
 		}
 
 		case IntentType.SET_GLOBAL_PARTICIPANTS: {
-			const participants = setGlobalParticipants(
-				message.payload.participants
-			)
+			setGlobalParticipants(message.payload.participants)
 
 			return {
 				response: { success: true } satisfies SuccessResponse,
-				participants,
 			}
 		}
 	}
@@ -132,7 +77,7 @@ async function processGlobalIntent(message: CoordinatorIntent) {
 export async function handleIntent(
 	message: Intent,
 	tabId: number,
-	sendResponse: (response: Session | SuccessResponse) => void
+	sendResponse: (response: Session | SuccessResponse | ErrorResponse) => void
 ): Promise<void> {
 	switch (message.intent) {
 		case IntentType.INITIATE_SESSION: {
@@ -148,38 +93,101 @@ export async function handleIntent(
 
 		case IntentType.SET_QUERY:
 		case IntentType.SET_ALGORITHM:
-		case IntentType.NEXT_RESULT:
-		case IntentType.PREVIOUS_RESULT:
 		case IntentType.SET_LITERALCASESENSITIVE:
 		case IntentType.SET_LITERALWHOLEWORD:
 		case IntentType.SET_REGEXCASESENSITIVE:
 		case IntentType.TOGGLE_SCOPE_SELECTION:
 		case IntentType.CLEAR_SCOPE: {
 			const session = resolveSession(tabId)
-
 			const response = processSessionIntent(message, session)
 
 			sendResponse(response)
 
-			const participants = getSessionParticipants(tabId)
+			if (isGlobalSessionParticipant(tabId)) {
+				for (const participant of getSessionParticipants(tabId)) {
+					const tabSession = structuredClone(session)
+					tabSession.results = {
+						...getTabResults(participant),
+						globalTotal: getGlobalTotalMatches(),
+					}
+					publishSession(participant, tabSession)
+					sendCommand(participant, session, message.intent)
+				}
 
-			for (const participant of participants) {
-				publishSession(participant, session)
-				sendCommand(participant, session, message.intent)
+				return
 			}
+
+			publishSession(tabId, session)
+			sendCommand(tabId, session, message.intent)
+
+			return
+		}
+
+		case IntentType.NEXT_RESULT: {
+			const { tab, response } = await navigateNext(tabId)
+
+			sendResponse(response)
+
+			if (tab.type === "none") {
+				return
+			}
+
+			const session = structuredClone(resolveSession(tab.tabId))
+			session.results = getTabResults(tab.tabId)
+
+			if (tab.type === "different-tab") {
+				session.results = {
+					...getTabResults(tab.tabId),
+					currentIndex: tab.index,
+				}
+				await chrome.tabs.update(tab.tabId, { active: true })
+			}
+
+			sendCommand(tab.tabId, session, IntentType.NEXT_RESULT, {
+				navigationType: tab.type,
+				navigationIndex: session.results.currentIndex,
+			})
+
+			return
+		}
+
+		case IntentType.PREVIOUS_RESULT: {
+			const { tab, response } = await navigatePrevious(tabId)
+
+			sendResponse(response)
+
+			if (tab.type === "none") {
+				return
+			}
+
+			const session = structuredClone(resolveSession(tab.tabId))
+			session.results = getTabResults(tab.tabId)
+
+			if (tab.type === "different-tab") {
+				session.results = {
+					...getTabResults(tab.tabId),
+					currentIndex: tab.index,
+				}
+				await chrome.tabs.update(tab.tabId, { active: true })
+			}
+
+			sendCommand(tab.tabId, session, IntentType.PREVIOUS_RESULT, {
+				navigationType: tab.type,
+				navigationIndex: session.results.currentIndex,
+			})
 
 			return
 		}
 
 		case IntentType.SET_GLOBAL_MODE:
 		case IntentType.SET_GLOBAL_PARTICIPANTS: {
-			const { response, participants } =
-				await processGlobalIntent(message)
+			const { response } = await processGlobalIntent(message)
 
 			sendResponse(response)
 
-			for (const participant of participants) {
+			for (const participant of getSessionParticipants(tabId)) {
 				const session = resolveSession(participant)
+				console.log(session)
 
 				publishSession(participant, session)
 				sendCommand(participant, session, IntentType.SET_QUERY)

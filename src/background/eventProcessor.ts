@@ -1,28 +1,83 @@
 import type { ContentScriptEvent } from "../shared/messages/events/event"
 import { EventType } from "../shared/messages/events/eventTypes"
-import type { SuccessResponse } from "../shared/messages/response/response"
-import type { SearchSession } from "../shared/messages/session/SearchSession"
+import type {
+	ErrorResponse,
+	Session,
+	SuccessResponse,
+} from "../shared/messages/response/response"
+import { publishSession } from "./publisher"
+import {
+	getGlobalTotalMatches,
+	getSessionParticipants,
+	getTabResults,
+	isGlobalSessionParticipant,
+	resolveSession,
+	setTabResults,
+} from "./sessionManager"
 
 export function processEvent(
 	message: ContentScriptEvent,
-	session: SearchSession
-): SuccessResponse {
+	tabId: number,
+	sendResponse: (response: Session | SuccessResponse | ErrorResponse) => void
+): void {
+	const session = resolveSession(tabId)
+
 	switch (message.event) {
-		case EventType.SEARCH_COMPLETED:
+		case EventType.SEARCH_COMPLETED: {
+			if (isGlobalSessionParticipant(tabId)) {
+				setTabResults(tabId, message.payload)
+
+				sendResponse({ success: true })
+
+				for (const participant of getSessionParticipants(tabId)) {
+					const tabSession = structuredClone(session)
+					tabSession.results = {
+						...getTabResults(participant),
+						globalTotal: getGlobalTotalMatches(),
+					}
+					publishSession(participant, tabSession)
+				}
+
+				break
+			}
+
 			session.results = message.payload
 
-			return {
-				success: true,
+			sendResponse({ success: true })
+			publishSession(tabId, session)
+
+			break
+		}
+
+		case EventType.SEARCH_INDEX_CHANGED: {
+			if (isGlobalSessionParticipant(tabId)) {
+				const results = structuredClone(getTabResults(tabId))
+				results.currentIndex = message.payload.currentIndex
+				setTabResults(tabId, results)
+				sendResponse({ success: true })
+
+				const tabSession = structuredClone(session)
+				tabSession.results = results
+				publishSession(tabId, tabSession)
+
+				break
 			}
-		case EventType.SEARCH_INDEX_CHANGED:
+
 			session.results.currentIndex = message.payload.currentIndex
-			return {
-				success: true,
-			}
-		case EventType.SCOPE_SELECTION_CHANGED:
+
+			sendResponse({ success: true })
+			publishSession(tabId, session)
+
+			break
+		}
+
+		case EventType.SCOPE_SELECTION_CHANGED: {
 			session.scopeSelection.enabled = message.payload.enabled
-			return {
-				success: true,
-			}
+
+			sendResponse({ success: true })
+			publishSession(tabId, session)
+
+			break
+		}
 	}
 }

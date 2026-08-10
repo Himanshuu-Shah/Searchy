@@ -14,8 +14,6 @@ import type { ClearScope, ToggleScopeSelection } from "./updateScope"
 export type SessionIntent =
 	| UpdateQuery
 	| UpdateAlgorithm
-	| NavigateNext
-	| NavigatePrevious
 	| UpdateLiteralCaseSensitive
 	| UpdateLiteralWholeWord
 	| UpdateRegexCaseSensitive
@@ -24,4 +22,7 @@ export type SessionIntent =
 
 export type CoordinatorIntent = UpdateMode | UpdateGlobalParticipants
 
-export type Intent = SessionIntent | InitiateSession | CoordinatorIntent
+export type NavigationIntent = NavigateNext | NavigatePrevious
+
+export type Intent =
+	InitiateSession | SessionIntent | CoordinatorIntent | NavigationIntent

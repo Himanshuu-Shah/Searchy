@@ -8,10 +8,16 @@ type TabResults = {
 	currentIndex: number
 }
 
+type GlobalNavigation = {
+	tabId: number
+	matchIndex: number
+}
+
 type GlobalSearchState = {
 	enabled: boolean
 	participants: Set<number>
 	session: SearchSession | null
+	navigation: GlobalNavigation | null
 }
 
 type CoordinatorState = {
@@ -20,11 +26,12 @@ type CoordinatorState = {
 	tabResults: Map<number, TabResults>
 }
 
-const coordinatorState: CoordinatorState = {
+export const coordinatorState: CoordinatorState = {
 	global: {
 		enabled: false,
 		participants: new Set(),
 		session: null,
+		navigation: null,
 	},
 
 	localSessions: new Map<number, SearchSession>(),
@@ -87,14 +94,10 @@ export function resolveSession(tabId: number): SearchSession {
 	return getOrCreateSession(tabId)
 }
 
-export async function setGlobalMode(mode: SearchMode): Promise<Set<number>> {
+export async function setGlobalMode(mode: SearchMode): Promise<void> {
 	if (mode === "local") {
-		const participants = new Set(coordinatorState.global.participants)
-
 		coordinatorState.global.enabled = false
 		coordinatorState.global.participants.clear()
-
-		return participants
 	} else {
 		coordinatorState.global.enabled = true
 		const tabs = await chrome.tabs.query({
@@ -107,16 +110,11 @@ export async function setGlobalMode(mode: SearchMode): Promise<Set<number>> {
 				coordinatorState.global.participants.add(tab.id)
 			}
 		}
-
-		return new Set(coordinatorState.global.participants)
 	}
 }
 
-export function setGlobalParticipants(participants: Set<number>): Set<number> {
+export function setGlobalParticipants(participants: Set<number>): void {
 	coordinatorState.global.participants = participants
-	const newParticipants = new Set(coordinatorState.global.participants)
-
-	return newParticipants
 }
 
 export function getSessionParticipants(tabId: number): Set<number> {
@@ -128,4 +126,37 @@ export function getSessionParticipants(tabId: number): Set<number> {
 	}
 
 	return new Set([tabId])
+}
+
+export function isGlobalSessionParticipant(tabId: number): boolean {
+	if (
+		coordinatorState.global.enabled &&
+		coordinatorState.global.participants.has(tabId)
+	) {
+		return true
+	}
+
+	return false
+}
+
+export function setTabResults(tabId: number, tabResults: TabResults) {
+	coordinatorState.tabResults.set(tabId, tabResults)
+}
+
+export function getTabResults(tabId: number) {
+	return coordinatorState.tabResults.get(tabId)! //check later
+}
+
+export function getGlobalTotalMatches() {
+	let total = 0
+
+	for (const participant of coordinatorState.global.participants) {
+		const results = coordinatorState.tabResults.get(participant)
+
+		if (results) {
+			total += results.totalMatches
+		}
+	}
+
+	return total
 }

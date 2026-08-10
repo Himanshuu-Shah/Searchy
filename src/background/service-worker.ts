@@ -7,8 +7,6 @@ import type {
 } from "../shared/messages/response/response"
 import { processEvent } from "./eventProcessor"
 import { handleIntent } from "./intentProcessor"
-import { publishSession } from "./publisher"
-import { resolveSession } from "./sessionManager"
 
 type MessageResponse = Session | SuccessResponse | ErrorResponse
 
@@ -43,12 +41,7 @@ chrome.runtime.onMessage.addListener(
 				}
 
 				const tabId = sender.tab.id
-
-				const session = resolveSession(tabId)
-				const response = processEvent(message, session)
-
-				sendResponse(response)
-				publishSession(tabId, session)
+				processEvent(message, tabId, sendResponse)
 
 				return
 			}

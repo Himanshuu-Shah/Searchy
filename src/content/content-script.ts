@@ -134,6 +134,16 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 
 			break
 
+		case CommandType.NAVIGATE_TO_RESULT:
+			currentIndex = message.payload.index
+
+			highlightCurrentMatch(matches[currentIndex])
+			scrollToMatch(matches[currentIndex])
+
+			notifyCurrentIndex(currentIndex)
+
+			break
+
 		case CommandType.TOGGLE_SCOPE_SELECTION:
 			const host: HTMLElement = document.getElementById("searchy-root")!
 

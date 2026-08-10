@@ -25,6 +25,7 @@ export interface SearchSession {
 	results: {
 		totalMatches: number
 		currentIndex: number
+		globalTotal?: number
 	}
 
 	scopeSelection: {
