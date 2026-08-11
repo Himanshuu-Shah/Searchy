@@ -64,6 +64,7 @@ export function processEvent(
 
 				const tabSession = structuredClone(session)
 				tabSession.results = tabResults
+				tabSession.results.globalTotal = getGlobalTotalMatches()
 				publishSession(tabId, tabSession)
 
 				break
