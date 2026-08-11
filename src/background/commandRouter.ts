@@ -10,14 +10,25 @@ import type { Intent } from "../shared/messages/intents/intent"
 import { IntentType } from "../shared/messages/intents/intentTypes"
 import type { SearchSession } from "../shared/messages/session/SearchSession"
 
-type CommandOptions = {
-	navigationIndex: number
-	navigationType: "same-tab" | "different-tab"
-}
+type CommandOptions =
+	| {
+			session: SearchSession
+	  }
+	| {
+			navigation: NavigationOptions
+	  }
+
+type NavigationOptions =
+	| {
+			type: "same-tab"
+	  }
+	| {
+			type: "different-tab"
+			index: number
+	  }
 
 function createCommand(
 	intent: Intent["intent"],
-	session: SearchSession,
 	options?: CommandOptions
 ): Command | null {
 	switch (intent) {
@@ -25,39 +36,37 @@ function createCommand(
 			return null
 
 		case IntentType.SET_QUERY:
-			return createRunSearch(session)
-
 		case IntentType.SET_ALGORITHM:
-			return createRunSearch(session)
+		case IntentType.SET_LITERALCASESENSITIVE:
+		case IntentType.SET_LITERALWHOLEWORD:
+		case IntentType.SET_REGEXCASESENSITIVE:
+		case IntentType.SET_GLOBAL_MODE:
+		case IntentType.SET_GLOBAL_PARTICIPANTS:
+			if (options && "session" in options) {
+				return createRunSearch(options.session)
+			}
+
+			return null
 
 		case IntentType.NEXT_RESULT:
-			if (options) return createNextResult(options)
+			if (options && "navigation" in options) {
+				return createNextResult(options.navigation)
+			}
+
 			return null
 
 		case IntentType.PREVIOUS_RESULT:
-			if (options) return createPreviousResult(options)
+			if (options && "navigation" in options) {
+				return createPreviousResult(options.navigation)
+			}
+
 			return null
-
-		case IntentType.SET_LITERALCASESENSITIVE:
-			return createRunSearch(session)
-
-		case IntentType.SET_LITERALWHOLEWORD:
-			return createRunSearch(session)
-
-		case IntentType.SET_REGEXCASESENSITIVE:
-			return createRunSearch(session)
 
 		case IntentType.TOGGLE_SCOPE_SELECTION:
 			return createToggleScopeSelection()
 
 		case IntentType.CLEAR_SCOPE:
 			return createClearScope()
-
-		case IntentType.SET_GLOBAL_MODE:
-			return createRunSearch(session)
-
-		case IntentType.SET_GLOBAL_PARTICIPANTS:
-			return createRunSearch(session)
 	}
 }
 
@@ -88,9 +97,9 @@ function createRunSearch(session: SearchSession): RunSearch {
 }
 
 function createNextResult(
-	navigationOptions: CommandOptions
+	navigation: NavigationOptions
 ): NextResult | NavigateToResult {
-	if (navigationOptions.navigationType === "same-tab") {
+	if (navigation.type === "same-tab") {
 		return {
 			type: "command",
 			command: CommandType.NEXT_RESULT,
@@ -99,14 +108,14 @@ function createNextResult(
 	return {
 		type: "command",
 		command: CommandType.NAVIGATE_TO_RESULT,
-		payload: { index: navigationOptions.navigationIndex },
+		payload: { index: navigation.index },
 	} satisfies NavigateToResult
 }
 
 function createPreviousResult(
-	navigationOptions: CommandOptions
+	navigation: NavigationOptions
 ): PreviousResult | NavigateToResult {
-	if (navigationOptions.navigationType === "same-tab") {
+	if (navigation.type === "same-tab") {
 		return {
 			type: "command",
 			command: CommandType.PREVIOUS_RESULT,
@@ -115,7 +124,7 @@ function createPreviousResult(
 	return {
 		type: "command",
 		command: CommandType.NAVIGATE_TO_RESULT,
-		payload: { index: navigationOptions.navigationIndex },
+		payload: { index: navigation.index },
 	} satisfies NavigateToResult
 }
 
@@ -135,11 +144,10 @@ function createClearScope(): ClearScope {
 
 export function sendCommand(
 	tabId: number,
-	session: SearchSession,
 	intent: Intent["intent"],
 	options?: CommandOptions
 ) {
-	const message = createCommand(intent, session, options)
+	const message = createCommand(intent, options)
 	if (message) {
 		chrome.tabs.sendMessage(tabId, message)
 	}

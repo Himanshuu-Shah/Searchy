@@ -74,7 +74,7 @@ async function processGlobalIntent(message: CoordinatorIntent) {
 	}
 }
 
-export async function handleIntent(
+export async function processIntent(
 	message: Intent,
 	tabId: number,
 	sendResponse: (response: Session | SuccessResponse | ErrorResponse) => void
@@ -104,21 +104,31 @@ export async function handleIntent(
 			sendResponse(response)
 
 			if (isGlobalSessionParticipant(tabId)) {
-				for (const participant of getSessionParticipants(tabId)) {
+				for (const participant of getSessionParticipants()) {
 					const tabSession = structuredClone(session)
-					tabSession.results = {
-						...getTabResults(participant),
-						globalTotal: getGlobalTotalMatches(),
+					const tabResults = getTabResults(participant)
+
+					const globalTotal = getGlobalTotalMatches()
+					if (tabResults) {
+						tabSession.results = {
+							...tabResults,
+							globalTotal,
+						}
+					} else {
+						tabSession.results.globalTotal = globalTotal
 					}
+
 					publishSession(participant, tabSession)
-					sendCommand(participant, session, message.intent)
+					sendCommand(participant, message.intent, {
+						session: tabSession,
+					})
 				}
 
 				return
 			}
 
 			publishSession(tabId, session)
-			sendCommand(tabId, session, message.intent)
+			sendCommand(tabId, message.intent, { session })
 
 			return
 		}
@@ -132,20 +142,19 @@ export async function handleIntent(
 				return
 			}
 
-			const session = structuredClone(resolveSession(tab.tabId))
-			session.results = getTabResults(tab.tabId)
+			if (tab.type === "same-tab") {
+				sendCommand(tab.tabId, IntentType.NEXT_RESULT, {
+					navigation: {
+						type: "same-tab",
+					},
+				})
 
-			if (tab.type === "different-tab") {
-				session.results = {
-					...getTabResults(tab.tabId),
-					currentIndex: tab.index,
-				}
-				await chrome.tabs.update(tab.tabId, { active: true })
+				return
 			}
 
-			sendCommand(tab.tabId, session, IntentType.NEXT_RESULT, {
-				navigationType: tab.type,
-				navigationIndex: session.results.currentIndex,
+			await chrome.tabs.update(tab.tabId, { active: true })
+			sendCommand(tab.tabId, IntentType.NEXT_RESULT, {
+				navigation: { type: tab.type, index: tab.matchIndex },
 			})
 
 			return
@@ -160,20 +169,19 @@ export async function handleIntent(
 				return
 			}
 
-			const session = structuredClone(resolveSession(tab.tabId))
-			session.results = getTabResults(tab.tabId)
+			if (tab.type === "same-tab") {
+				sendCommand(tab.tabId, IntentType.PREVIOUS_RESULT, {
+					navigation: {
+						type: "same-tab",
+					},
+				})
 
-			if (tab.type === "different-tab") {
-				session.results = {
-					...getTabResults(tab.tabId),
-					currentIndex: tab.index,
-				}
-				await chrome.tabs.update(tab.tabId, { active: true })
+				return
 			}
 
-			sendCommand(tab.tabId, session, IntentType.PREVIOUS_RESULT, {
-				navigationType: tab.type,
-				navigationIndex: session.results.currentIndex,
+			await chrome.tabs.update(tab.tabId, { active: true })
+			sendCommand(tab.tabId, IntentType.PREVIOUS_RESULT, {
+				navigation: { type: tab.type, index: tab.matchIndex },
 			})
 
 			return
@@ -181,16 +189,40 @@ export async function handleIntent(
 
 		case IntentType.SET_GLOBAL_MODE:
 		case IntentType.SET_GLOBAL_PARTICIPANTS: {
+			const beforeParticipants = getSessionParticipants()
 			const { response } = await processGlobalIntent(message)
+			const participants = getSessionParticipants()
 
 			sendResponse(response)
 
-			for (const participant of getSessionParticipants(tabId)) {
-				const session = resolveSession(participant)
-				console.log(session)
+			if (isGlobalSessionParticipant(tabId)) {
+				const session = resolveSession(tabId)
+				const globalTotal = getGlobalTotalMatches()
 
+				for (const participant of participants) {
+					const tabSession = structuredClone(session)
+					const tabResults = getTabResults(participant)
+
+					if (tabResults) {
+						session.results = {
+							...tabResults,
+							globalTotal,
+						}
+					} else {
+						session.results.globalTotal = globalTotal
+					}
+
+					publishSession(participant, tabSession)
+					sendCommand(participant, IntentType.SET_QUERY, { session })
+				}
+
+				return
+			}
+
+			for (const participant of beforeParticipants) {
+				const session = resolveSession(participant)
 				publishSession(participant, session)
-				sendCommand(participant, session, IntentType.SET_QUERY)
+				sendCommand(participant, IntentType.SET_QUERY, { session })
 			}
 
 			return

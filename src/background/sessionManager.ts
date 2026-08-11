@@ -55,7 +55,7 @@ function createDefaultSession(): SearchSession {
 		},
 		results: {
 			totalMatches: 0,
-			currentIndex: 0,
+			currentIndex: -1,
 		},
 		scopeSelection: {
 			enabled: false,
@@ -117,15 +117,8 @@ export function setGlobalParticipants(participants: Set<number>): void {
 	coordinatorState.global.participants = participants
 }
 
-export function getSessionParticipants(tabId: number): Set<number> {
-	if (
-		coordinatorState.global.enabled &&
-		coordinatorState.global.participants.has(tabId)
-	) {
-		return new Set(coordinatorState.global.participants)
-	}
-
-	return new Set([tabId])
+export function getSessionParticipants(): Set<number> {
+	return new Set(coordinatorState.global.participants)
 }
 
 export function isGlobalSessionParticipant(tabId: number): boolean {
@@ -143,7 +136,7 @@ export function setTabResults(tabId: number, tabResults: TabResults) {
 	coordinatorState.tabResults.set(tabId, tabResults)
 }
 
-export function getTabResults(tabId: number) {
+export function getTabResults(tabId: number): TabResults | undefined {
 	return coordinatorState.tabResults.get(tabId)! //check later
 }
 
@@ -159,4 +152,13 @@ export function getGlobalTotalMatches() {
 	}
 
 	return total
+}
+
+export function removeGlobalParticipant(tabId: number) {
+	coordinatorState.global.participants.delete(tabId)
+	coordinatorState.tabResults.delete(tabId)
+
+	if (coordinatorState.global.navigation?.tabId === tabId) {
+		coordinatorState.global.navigation = null
+	}
 }

@@ -13,7 +13,7 @@ type NavigationResult =
 			response: SuccessResponse | ErrorResponse
 	  }
 	| {
-			tab: { type: "different-tab"; tabId: number; index: number }
+			tab: { type: "different-tab"; tabId: number; matchIndex: number }
 			response: SuccessResponse | ErrorResponse
 	  }
 	| {
@@ -67,33 +67,29 @@ async function getNextParticipatingTab(
 async function navigateGlobalNext(
 	currentTabId: number
 ): Promise<NavigationResult> {
-	const currentTabResults = coordinatorState.tabResults.get(currentTabId)!
+	const currentTabResults = coordinatorState.tabResults.get(currentTabId)
+
+	if (!currentTabResults) {
+		throw new Error(
+			`No tab results found for participating tab ${currentTabId}`
+		)
+	}
 
 	coordinatorState.global.navigation = {
 		tabId: currentTabId,
 		matchIndex: currentTabResults.currentIndex,
 	}
 
-	const { tabId, matchIndex } = coordinatorState.global.navigation
-	const results = coordinatorState.tabResults.get(tabId)
-
-	if (!results) {
-		return {
-			tab: { type: "none" },
-			response: { success: true } satisfies SuccessResponse,
-		}
-	}
-
 	// There is another match in the current tab.
-	if (matchIndex < results.totalMatches - 1) {
+	if (currentTabResults.currentIndex < currentTabResults.totalMatches - 1) {
 		return {
-			tab: { type: "same-tab", tabId },
+			tab: { type: "same-tab", tabId: currentTabId },
 			response: { success: true } satisfies SuccessResponse,
 		}
 	}
 
 	// Current tab is exhausted.
-	const nextTabId = await getNextParticipatingTab(tabId)
+	const nextTabId = await getNextParticipatingTab(currentTabId)
 
 	if (nextTabId === null) {
 		return {
@@ -103,7 +99,7 @@ async function navigateGlobalNext(
 	}
 
 	return {
-		tab: { type: "different-tab", tabId: nextTabId, index: 0 },
+		tab: { type: "different-tab", tabId: nextTabId, matchIndex: 0 },
 		response: { success: true } satisfies SuccessResponse,
 	}
 }
@@ -155,36 +151,29 @@ async function getPreviousParticipatingTab(
 async function navigateGlobalPrevious(
 	currentTabId: number
 ): Promise<NavigationResult> {
-	const currentTabResults = coordinatorState.tabResults.get(currentTabId)!
+	const currentTabResults = coordinatorState.tabResults.get(currentTabId)
+
+	if (!currentTabResults) {
+		throw new Error(
+			`No tab results found for participating tab ${currentTabId}`
+		)
+	}
 
 	coordinatorState.global.navigation = {
 		tabId: currentTabId,
 		matchIndex: currentTabResults.currentIndex,
 	}
 
-	const navigation = coordinatorState.global.navigation
-
-	const { tabId, matchIndex } = navigation
-
-	const results = coordinatorState.tabResults.get(tabId)
-
-	if (!results) {
-		return {
-			tab: { type: "none" },
-			response: { success: true } satisfies SuccessResponse,
-		}
-	}
-
 	// There is another match in the current tab.
-	if (matchIndex > 0) {
+	if (currentTabResults.currentIndex > 0) {
 		return {
-			tab: { type: "same-tab", tabId },
+			tab: { type: "same-tab", tabId: currentTabId },
 			response: { success: true } satisfies SuccessResponse,
 		}
 	}
 
 	// Current tab is at its first match.
-	const previousTabId = await getPreviousParticipatingTab(tabId)
+	const previousTabId = await getPreviousParticipatingTab(currentTabId)
 
 	if (previousTabId === null) {
 		return {
@@ -206,7 +195,7 @@ async function navigateGlobalPrevious(
 		tab: {
 			type: "different-tab",
 			tabId: previousTabId,
-			index: previousResults.totalMatches - 1,
+			matchIndex: previousResults.totalMatches - 1,
 		},
 		response: { success: true } satisfies SuccessResponse,
 	}

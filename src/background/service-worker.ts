@@ -6,7 +6,16 @@ import type {
 	SuccessResponse,
 } from "../shared/messages/response/response"
 import { processEvent } from "./eventProcessor"
-import { handleIntent } from "./intentProcessor"
+import { processIntent } from "./intentProcessor"
+import { publishSession } from "./publisher"
+import {
+	getGlobalTotalMatches,
+	getSessionParticipants,
+	getTabResults,
+	isGlobalSessionParticipant,
+	removeGlobalParticipant,
+	resolveSession,
+} from "./sessionManager"
 
 type MessageResponse = Session | SuccessResponse | ErrorResponse
 
@@ -30,7 +39,7 @@ chrome.runtime.onMessage.addListener(
 				}
 
 				const tabId = sender.tab.id
-				handleIntent(message, tabId, sendResponse)
+				processIntent(message, tabId, sendResponse)
 
 				return true
 			}
@@ -48,3 +57,26 @@ chrome.runtime.onMessage.addListener(
 		}
 	}
 )
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+	if (isGlobalSessionParticipant(tabId)) {
+		removeGlobalParticipant(tabId)
+		const globalTotal = getGlobalTotalMatches()
+
+		for (const participant of getSessionParticipants()) {
+			const session = structuredClone(resolveSession(participant))
+
+			const tabResults = getTabResults(participant)
+			if (tabResults) {
+				session.results = {
+					...tabResults,
+					globalTotal,
+				}
+			} else {
+				session.results.globalTotal = globalTotal
+			}
+
+			publishSession(participant, session)
+		}
+	}
+})

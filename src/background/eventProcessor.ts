@@ -29,9 +29,10 @@ export function processEvent(
 
 				sendResponse({ success: true })
 
-				for (const participant of getSessionParticipants(tabId)) {
+				for (const participant of getSessionParticipants()) {
 					const tabSession = structuredClone(session)
 					tabSession.results = {
+						...tabSession.results,
 						...getTabResults(participant),
 						globalTotal: getGlobalTotalMatches(),
 					}
@@ -51,13 +52,18 @@ export function processEvent(
 
 		case EventType.SEARCH_INDEX_CHANGED: {
 			if (isGlobalSessionParticipant(tabId)) {
-				const results = structuredClone(getTabResults(tabId))
-				results.currentIndex = message.payload.currentIndex
-				setTabResults(tabId, results)
+				const tabResults = structuredClone(getTabResults(tabId))
+
+				if (!tabResults) {
+					break
+				}
+
+				tabResults.currentIndex = message.payload.currentIndex
+				setTabResults(tabId, tabResults)
 				sendResponse({ success: true })
 
 				const tabSession = structuredClone(session)
-				tabSession.results = results
+				tabSession.results = tabResults
 				publishSession(tabId, tabSession)
 
 				break
