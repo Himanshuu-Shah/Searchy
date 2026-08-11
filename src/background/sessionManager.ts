@@ -1,4 +1,6 @@
 import type {
+	GlobalSearchSession,
+	LocalSearchSession,
 	SearchMode,
 	SearchSession,
 } from "../shared/messages/session/SearchSession"
@@ -16,12 +18,12 @@ type GlobalNavigation = {
 type GlobalSearchState = {
 	enabled: boolean
 	participants: Set<number>
-	session: SearchSession | null
+	session: GlobalSearchSession | null
 	navigation: GlobalNavigation | null
 }
 
 type CoordinatorState = {
-	localSessions: Map<number, SearchSession>
+	localSessions: Map<number, LocalSearchSession>
 	global: GlobalSearchState
 	tabResults: Map<number, TabResults>
 }
@@ -34,12 +36,12 @@ export const coordinatorState: CoordinatorState = {
 		navigation: null,
 	},
 
-	localSessions: new Map<number, SearchSession>(),
+	localSessions: new Map<number, LocalSearchSession>(),
 
 	tabResults: new Map<number, TabResults>(),
 }
 
-function createDefaultSession(): SearchSession {
+function createLocalSession(): LocalSearchSession {
 	return {
 		query: "",
 		mode: "local",
@@ -63,14 +65,35 @@ function createDefaultSession(): SearchSession {
 	}
 }
 
-function getOrCreateSession(tabId: number): SearchSession {
+function createGlobalSession(): GlobalSearchSession {
+	return {
+		query: "",
+		mode: "global",
+		algorithm: "literal",
+		config: {
+			literal: {
+				caseSensitive: false,
+				wholeWord: false,
+			},
+			regex: {
+				caseSensitive: false,
+			},
+		},
+		results: {
+			totalMatches: 0,
+			currentIndex: -1,
+			globalTotal: 0,
+		},
+	}
+}
+function getOrCreateSession(tabId: number): LocalSearchSession {
 	const existing = coordinatorState.localSessions.get(tabId)
 
 	if (existing) {
 		return existing
 	}
 
-	const session = createDefaultSession()
+	const session = createLocalSession()
 	coordinatorState.localSessions.set(tabId, session)
 
 	return session
@@ -82,8 +105,7 @@ export function resolveSession(tabId: number): SearchSession {
 		coordinatorState.global.participants.has(tabId)
 	) {
 		if (coordinatorState.global.session === null) {
-			const session = createDefaultSession()
-			session.mode = "workspace"
+			const session: GlobalSearchSession = createGlobalSession()
 
 			coordinatorState.global.session = session
 		}
@@ -114,7 +136,7 @@ export async function setGlobalMode(mode: SearchMode): Promise<void> {
 }
 
 export function setGlobalParticipants(participants: Set<number>): void {
-	coordinatorState.global.participants = participants
+	coordinatorState.global.participants = new Set(participants)
 }
 
 export function getSessionParticipants(): Set<number> {
@@ -137,7 +159,7 @@ export function setTabResults(tabId: number, tabResults: TabResults) {
 }
 
 export function getTabResults(tabId: number): TabResults | undefined {
-	return coordinatorState.tabResults.get(tabId)! //check later
+	return coordinatorState.tabResults.get(tabId)
 }
 
 export function getGlobalTotalMatches() {

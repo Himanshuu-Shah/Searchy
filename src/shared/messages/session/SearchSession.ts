@@ -1,4 +1,4 @@
-export type SearchMode = "local" | "workspace"
+export type SearchMode = "local" | "global"
 
 export type SearchAlgorithm = "literal" | "regex"
 
@@ -11,10 +11,12 @@ export type RegexConfig = {
 	caseSensitive: boolean
 }
 
-export interface SearchSession {
+export type SearchSession = LocalSearchSession | GlobalSearchSession
+
+export type LocalSearchSession = {
 	query: string
 
-	mode: SearchMode
+	mode: "local"
 	algorithm: SearchAlgorithm
 
 	config: {
@@ -25,10 +27,27 @@ export interface SearchSession {
 	results: {
 		totalMatches: number
 		currentIndex: number
-		globalTotal?: number
 	}
 
 	scopeSelection: {
 		enabled: boolean
+	}
+}
+
+export type GlobalSearchSession = {
+	query: string
+
+	mode: "global"
+	algorithm: SearchAlgorithm
+
+	config: {
+		literal: LiteralConfig
+		regex: RegexConfig
+	}
+
+	results: {
+		totalMatches: number
+		currentIndex: number
+		globalTotal: number
 	}
 }

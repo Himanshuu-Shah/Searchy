@@ -10,7 +10,6 @@ import {
 	getGlobalTotalMatches,
 	getSessionParticipants,
 	getTabResults,
-	isGlobalSessionParticipant,
 	resolveSession,
 	setTabResults,
 } from "./sessionManager"
@@ -24,7 +23,7 @@ export function processEvent(
 
 	switch (message.event) {
 		case EventType.SEARCH_COMPLETED: {
-			if (isGlobalSessionParticipant(tabId)) {
+			if (session.mode === "global") {
 				setTabResults(tabId, message.payload)
 
 				sendResponse({ success: true })
@@ -51,7 +50,7 @@ export function processEvent(
 		}
 
 		case EventType.SEARCH_INDEX_CHANGED: {
-			if (isGlobalSessionParticipant(tabId)) {
+			if (session.mode === "global") {
 				const tabResults = structuredClone(getTabResults(tabId))
 
 				if (!tabResults) {
@@ -63,8 +62,11 @@ export function processEvent(
 				sendResponse({ success: true })
 
 				const tabSession = structuredClone(session)
-				tabSession.results = tabResults
-				tabSession.results.globalTotal = getGlobalTotalMatches()
+				tabSession.results = {
+					...tabResults,
+					globalTotal: getGlobalTotalMatches(),
+				}
+
 				publishSession(tabId, tabSession)
 
 				break
@@ -79,10 +81,12 @@ export function processEvent(
 		}
 
 		case EventType.SCOPE_SELECTION_CHANGED: {
-			session.scopeSelection.enabled = message.payload.enabled
+			if (session.mode === "local") {
+				session.scopeSelection.enabled = message.payload.enabled
 
-			sendResponse({ success: true })
-			publishSession(tabId, session)
+				sendResponse({ success: true })
+				publishSession(tabId, session)
+			}
 
 			break
 		}

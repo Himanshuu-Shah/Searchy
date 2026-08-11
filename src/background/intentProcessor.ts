@@ -17,7 +17,6 @@ import {
 	getGlobalTotalMatches,
 	getSessionParticipants,
 	getTabResults,
-	isGlobalSessionParticipant,
 	resolveSession,
 	setGlobalMode,
 	setGlobalParticipants,
@@ -46,8 +45,11 @@ function processSessionIntent(message: SessionIntent, session: SearchSession) {
 			return { success: true } satisfies SuccessResponse
 
 		case IntentType.TOGGLE_SCOPE_SELECTION:
-			session.scopeSelection.enabled = message.payload.enabled
-			return { success: true } satisfies SuccessResponse
+			if (session.mode === "local") {
+				session.scopeSelection.enabled = message.payload.enabled
+				return { success: true } satisfies SuccessResponse
+			}
+			return { success: false, error: "" } satisfies ErrorResponse
 
 		case IntentType.CLEAR_SCOPE:
 			return { success: true } satisfies SuccessResponse
@@ -103,12 +105,13 @@ export async function processIntent(
 
 			sendResponse(response)
 
-			if (isGlobalSessionParticipant(tabId)) {
+			if (session.mode === "global") {
+				const globalTotal = getGlobalTotalMatches()
+
 				for (const participant of getSessionParticipants()) {
 					const tabSession = structuredClone(session)
 					const tabResults = getTabResults(participant)
 
-					const globalTotal = getGlobalTotalMatches()
 					if (tabResults) {
 						tabSession.results = {
 							...tabResults,
@@ -194,9 +197,9 @@ export async function processIntent(
 			const participants = getSessionParticipants()
 
 			sendResponse(response)
+			const session = resolveSession(tabId)
 
-			if (isGlobalSessionParticipant(tabId)) {
-				const session = resolveSession(tabId)
+			if (session.mode === "global") {
 				const globalTotal = getGlobalTotalMatches()
 
 				for (const participant of participants) {
@@ -204,16 +207,18 @@ export async function processIntent(
 					const tabResults = getTabResults(participant)
 
 					if (tabResults) {
-						session.results = {
+						tabSession.results = {
 							...tabResults,
 							globalTotal,
 						}
 					} else {
-						session.results.globalTotal = globalTotal
+						tabSession.results.globalTotal = globalTotal
 					}
 
 					publishSession(participant, tabSession)
-					sendCommand(participant, IntentType.SET_QUERY, { session })
+					sendCommand(participant, IntentType.SET_QUERY, {
+						session: tabSession,
+					})
 				}
 
 				return

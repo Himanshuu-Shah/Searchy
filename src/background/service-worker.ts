@@ -12,7 +12,6 @@ import {
 	getGlobalTotalMatches,
 	getSessionParticipants,
 	getTabResults,
-	isGlobalSessionParticipant,
 	removeGlobalParticipant,
 	resolveSession,
 } from "./sessionManager"
@@ -59,24 +58,29 @@ chrome.runtime.onMessage.addListener(
 )
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-	if (isGlobalSessionParticipant(tabId)) {
-		removeGlobalParticipant(tabId)
-		const globalTotal = getGlobalTotalMatches()
+	const session = resolveSession(tabId)
 
-		for (const participant of getSessionParticipants()) {
-			const session = structuredClone(resolveSession(participant))
+	if (session.mode === "local") {
+		return
+	}
 
-			const tabResults = getTabResults(participant)
-			if (tabResults) {
-				session.results = {
-					...tabResults,
-					globalTotal,
-				}
-			} else {
-				session.results.globalTotal = globalTotal
+	removeGlobalParticipant(tabId)
+
+	const globalTotal = getGlobalTotalMatches()
+
+	for (const participant of getSessionParticipants()) {
+		const tabSession = structuredClone(session)
+		const tabResults = getTabResults(participant)
+
+		if (tabResults) {
+			tabSession.results = {
+				...tabResults,
+				globalTotal,
 			}
-
-			publishSession(participant, session)
+		} else {
+			tabSession.results.globalTotal = globalTotal
 		}
+
+		publishSession(participant, tabSession)
 	}
 })

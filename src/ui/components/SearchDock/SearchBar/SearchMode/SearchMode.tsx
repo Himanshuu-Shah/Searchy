@@ -17,8 +17,8 @@ const SEARCH_MODE: {
 		description: "Search in the local webpage",
 	},
 	{
-		id: "workspace",
-		name: "WorkSpace",
+		id: "global",
+		name: "global",
 		description: "Search cross pages",
 	},
 ]
