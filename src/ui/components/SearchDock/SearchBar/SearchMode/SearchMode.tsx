@@ -18,7 +18,7 @@ const SEARCH_MODE: {
 	},
 	{
 		id: "global",
-		name: "global",
+		name: "Global",
 		description: "Search cross pages",
 	},
 ]

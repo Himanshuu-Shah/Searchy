@@ -8,10 +8,10 @@ import type {
 import { publishSession } from "./publisher"
 import {
 	getGlobalTotalMatches,
-	getSessionParticipants,
 	getTabResults,
 	resolveSession,
 	setTabResults,
+	syncGlobalParticipants,
 } from "./sessionManager"
 
 export function processEvent(
@@ -25,18 +25,9 @@ export function processEvent(
 		case EventType.SEARCH_COMPLETED: {
 			if (session.mode === "global") {
 				setTabResults(tabId, message.payload)
-
 				sendResponse({ success: true })
 
-				for (const participant of getSessionParticipants()) {
-					const tabSession = structuredClone(session)
-					tabSession.results = {
-						...tabSession.results,
-						...getTabResults(participant),
-						globalTotal: getGlobalTotalMatches(),
-					}
-					publishSession(participant, tabSession)
-				}
+				syncGlobalParticipants(session)
 
 				break
 			}
@@ -54,6 +45,10 @@ export function processEvent(
 				const tabResults = structuredClone(getTabResults(tabId))
 
 				if (!tabResults) {
+					sendResponse({
+						success: false,
+						error: "Tab results not found",
+					})
 					break
 				}
 
@@ -86,7 +81,14 @@ export function processEvent(
 
 				sendResponse({ success: true })
 				publishSession(tabId, session)
+
+				break
 			}
+
+			sendResponse({
+				success: false,
+				error: "Scope selection is unavailable in global mode",
+			})
 
 			break
 		}

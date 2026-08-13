@@ -7,13 +7,10 @@ import type {
 } from "../shared/messages/response/response"
 import { processEvent } from "./eventProcessor"
 import { processIntent } from "./intentProcessor"
-import { publishSession } from "./publisher"
 import {
-	getGlobalTotalMatches,
-	getSessionParticipants,
-	getTabResults,
 	removeGlobalParticipant,
 	resolveSession,
+	syncGlobalParticipants,
 } from "./sessionManager"
 
 type MessageResponse = Session | SuccessResponse | ErrorResponse
@@ -66,21 +63,5 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 	removeGlobalParticipant(tabId)
 
-	const globalTotal = getGlobalTotalMatches()
-
-	for (const participant of getSessionParticipants()) {
-		const tabSession = structuredClone(session)
-		const tabResults = getTabResults(participant)
-
-		if (tabResults) {
-			tabSession.results = {
-				...tabResults,
-				globalTotal,
-			}
-		} else {
-			tabSession.results.globalTotal = globalTotal
-		}
-
-		publishSession(participant, tabSession)
-	}
+	syncGlobalParticipants(session)
 })

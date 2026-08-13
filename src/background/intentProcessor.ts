@@ -14,12 +14,11 @@ import { sendCommand } from "./commandRouter"
 import { navigateNext, navigatePrevious } from "./navigationManager"
 import { publishSession } from "./publisher"
 import {
-	getGlobalTotalMatches,
 	getSessionParticipants,
-	getTabResults,
 	resolveSession,
 	setGlobalMode,
 	setGlobalParticipants,
+	syncGlobalParticipants,
 } from "./sessionManager"
 
 function processSessionIntent(message: SessionIntent, session: SearchSession) {
@@ -56,10 +55,24 @@ function processSessionIntent(message: SessionIntent, session: SearchSession) {
 	}
 }
 
-async function processGlobalIntent(message: CoordinatorIntent) {
+async function processGlobalIntent(message: CoordinatorIntent, tabId: number) {
 	switch (message.intent) {
 		case IntentType.SET_GLOBAL_MODE: {
+			const initialParticipants = getSessionParticipants()
+
 			await setGlobalMode(message.payload.mode)
+
+			const session = resolveSession(tabId)
+
+			if (session.mode === "global") {
+				syncGlobalParticipants(session, IntentType.SET_QUERY)
+			} else {
+				for (const participant of initialParticipants) {
+					const session = resolveSession(participant)
+					publishSession(participant, session)
+					sendCommand(participant, IntentType.SET_QUERY, { session })
+				}
+			}
 
 			return {
 				response: { success: true } satisfies SuccessResponse,
@@ -106,26 +119,7 @@ export async function processIntent(
 			sendResponse(response)
 
 			if (session.mode === "global") {
-				const globalTotal = getGlobalTotalMatches()
-
-				for (const participant of getSessionParticipants()) {
-					const tabSession = structuredClone(session)
-					const tabResults = getTabResults(participant)
-
-					if (tabResults) {
-						tabSession.results = {
-							...tabResults,
-							globalTotal,
-						}
-					} else {
-						tabSession.results.globalTotal = globalTotal
-					}
-
-					publishSession(participant, tabSession)
-					sendCommand(participant, message.intent, {
-						session: tabSession,
-					})
-				}
+				syncGlobalParticipants(session, message.intent)
 
 				return
 			}
@@ -192,43 +186,9 @@ export async function processIntent(
 
 		case IntentType.SET_GLOBAL_MODE:
 		case IntentType.SET_GLOBAL_PARTICIPANTS: {
-			const beforeParticipants = getSessionParticipants()
-			const { response } = await processGlobalIntent(message)
-			const participants = getSessionParticipants()
+			const { response } = await processGlobalIntent(message, tabId)
 
 			sendResponse(response)
-			const session = resolveSession(tabId)
-
-			if (session.mode === "global") {
-				const globalTotal = getGlobalTotalMatches()
-
-				for (const participant of participants) {
-					const tabSession = structuredClone(session)
-					const tabResults = getTabResults(participant)
-
-					if (tabResults) {
-						tabSession.results = {
-							...tabResults,
-							globalTotal,
-						}
-					} else {
-						tabSession.results.globalTotal = globalTotal
-					}
-
-					publishSession(participant, tabSession)
-					sendCommand(participant, IntentType.SET_QUERY, {
-						session: tabSession,
-					})
-				}
-
-				return
-			}
-
-			for (const participant of beforeParticipants) {
-				const session = resolveSession(participant)
-				publishSession(participant, session)
-				sendCommand(participant, IntentType.SET_QUERY, { session })
-			}
 
 			return
 		}

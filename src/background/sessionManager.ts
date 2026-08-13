@@ -1,9 +1,12 @@
+import type { Intent } from "../shared/messages/intents/intent"
 import type {
 	GlobalSearchSession,
 	LocalSearchSession,
 	SearchMode,
 	SearchSession,
 } from "../shared/messages/session/SearchSession"
+import { sendCommand } from "./commandRouter"
+import { publishSession } from "./publisher"
 
 type TabResults = {
 	totalMatches: number
@@ -182,5 +185,34 @@ export function removeGlobalParticipant(tabId: number) {
 
 	if (coordinatorState.global.navigation?.tabId === tabId) {
 		coordinatorState.global.navigation = null
+	}
+}
+
+export function syncGlobalParticipants(
+	session: GlobalSearchSession,
+	intent?: Intent["intent"]
+): void {
+	const globalTotal = getGlobalTotalMatches()
+
+	for (const participant of getSessionParticipants()) {
+		const tabSession = structuredClone(session)
+		const tabResults = getTabResults(participant)
+
+		if (tabResults) {
+			tabSession.results = {
+				...tabResults,
+				globalTotal,
+			}
+		} else {
+			tabSession.results.globalTotal = globalTotal
+		}
+
+		publishSession(participant, tabSession)
+
+		if (intent) {
+			sendCommand(participant, intent, {
+				session: tabSession,
+			})
+		}
 	}
 }
