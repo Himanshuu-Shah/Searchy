@@ -14,9 +14,11 @@ import {
 	notifyScopeSelection,
 	notifySearchResults,
 } from "./sendEvent"
+import { startMutationObserver } from "./mutationObserver/mutationObserver"
 
 console.log("Content script injected.")
 mountSearchy()
+
 // ---------- State ----------
 
 // Current search results
@@ -62,6 +64,7 @@ function rerunSearch() {
 	currentIndex = matches.length > 0 ? 0 : -1
 
 	displaySearchResults(matches, currentIndex)
+	notifySearchResults(matches.length, currentIndex)
 }
 
 /**
@@ -107,8 +110,6 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 		case CommandType.RUN_SEARCH:
 			currentSearch = message.payload
 			rerunSearch()
-
-			notifySearchResults(matches.length, currentIndex)
 
 			break
 
@@ -163,7 +164,6 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 					selectScope(element)
 					rerunSearch()
 
-					notifySearchResults(matches.length, currentIndex)
 					notifyScopeSelection(false)
 				},
 				shouldIgnore(event) {
@@ -178,8 +178,9 @@ chrome.runtime.onMessage.addListener((message: Command) => {
 
 			searchNode = document.body
 			rerunSearch()
-			notifySearchResults(matches.length, currentIndex)
 
 			break
 	}
 })
+
+startMutationObserver(rerunSearch, () => currentSearch)
