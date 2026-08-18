@@ -1,4 +1,5 @@
 import type { InitiateSession } from "./initiateSession"
+import type { SetActiveTab } from "./setActiveTab"
 import type { UpdateAlgorithm } from "./updateAlgorithm"
 import type { UpdateGlobalParticipants } from "./updateGlobalParticipants"
 import type {
@@ -22,7 +23,7 @@ export type SessionIntent =
 
 export type CoordinatorIntent = UpdateMode | UpdateGlobalParticipants
 
-export type NavigationIntent = NavigateNext | NavigatePrevious
+export type NavigationIntent = NavigateNext | NavigatePrevious | SetActiveTab
 
 export type Intent =
 	InitiateSession | SessionIntent | CoordinatorIntent | NavigationIntent

@@ -67,6 +67,9 @@ function createCommand(
 
 		case IntentType.CLEAR_SCOPE:
 			return createClearScope()
+
+		default:
+			throw new Error("Unxpected intent received")
 	}
 }
 

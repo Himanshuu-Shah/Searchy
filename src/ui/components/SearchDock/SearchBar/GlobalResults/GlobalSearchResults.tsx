@@ -1,3 +1,4 @@
+import { setActiveTab } from "../../../../sendIntent"
 import { useSearchSession } from "../../../../session/useSearchSession"
 
 export default function GlobalSearchResults() {
@@ -9,7 +10,7 @@ export default function GlobalSearchResults() {
 	return (
 		<ul className="dropdown globalSearchResults">
 			{session.globalResults.tabResultsSummary.map((tab) => (
-				<li key={tab.tabId}>
+				<li key={tab.tabId} onClick={() => setActiveTab(tab.tabId)}>
 					<span>{tab.tabName}</span>
 					<span>{tab.totalMatches}</span>
 				</li>

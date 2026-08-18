@@ -184,6 +184,23 @@ export async function processIntent(
 			return
 		}
 
+		case IntentType.SELECT_GLOBAL_TAB: {
+			try {
+				await chrome.tabs.update(message.payload.tabId, {
+					active: true,
+				})
+
+				sendResponse({ success: true } satisfies SuccessResponse)
+			} catch {
+				sendResponse({
+					success: false,
+					error: "Failed to activate tab",
+				} satisfies ErrorResponse)
+			}
+
+			return
+		}
+
 		case IntentType.SET_GLOBAL_MODE:
 		case IntentType.SET_GLOBAL_PARTICIPANTS: {
 			const { response } = await processGlobalIntent(message, tabId)

@@ -142,3 +142,13 @@ export async function updateGlobalParticipants(
 		payload: { participants },
 	})
 }
+
+export async function setActiveTab(
+	tabId: number
+): Promise<SuccessResponse | ErrorResponse> {
+	return sendMessage({
+		type: "intent",
+		intent: IntentType.SELECT_GLOBAL_TAB,
+		payload: { tabId },
+	})
+}
