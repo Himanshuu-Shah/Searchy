@@ -8,6 +8,7 @@
 @import "../components/SearchDock/SearchBar/SearchInput/SearchInput.css";
 @import "../components/SearchDock/SearchBar/Navigation/Navigation.css";
 @import "../components/SearchDock/SearchBar/SearchOptions/SearchOptions.css";
+@import "../components/SearchDock/SearchBar/GlobalResults/GlobalResults.css";
 
 :host {
 	--searchy-height: 40px;
@@ -26,6 +27,8 @@
 
 	--searchy-button-hover-background: hsl(45, 15%, 95%);
 	--searchy-button-hover-border-color: hsl(45, 15%, 90%);
+
+	--searchy-elements-height: 30px;
 
 	font-family: var(--searchy-font-family);
 	font-size: var(--searchy-font-size);

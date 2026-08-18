@@ -1,19 +1,23 @@
 .dropdown {
-	list-style: none;
-	margin: 0;
-	padding: 4px 8px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
 	position: absolute;
-	bottom: 37px;
+	bottom: 100%;
+
+	margin: 0;
+	padding: 0;
+
+	border: 1px solid #ccc;
+	border-radius: 3px;
 	background: #fff;
+
+	list-style: none;
 }
 
 .dropdown > li {
-	padding: "2px";
+	padding: 8px;
 	cursor: "pointer";
 }
 
 .dropdown > li:hover {
 	background-color: var(--searchy-button-hover-background);
+	cursor: pointer;
 }

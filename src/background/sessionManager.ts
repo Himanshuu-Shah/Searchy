@@ -4,6 +4,7 @@ import type {
 	LocalSearchSession,
 	SearchMode,
 	SearchSession,
+	TabResultsSummary,
 } from "../shared/messages/session/SearchSession"
 import { sendCommand } from "./commandRouter"
 import { publishSession } from "./publisher"
@@ -85,10 +86,14 @@ function createGlobalSession(): GlobalSearchSession {
 		results: {
 			totalMatches: 0,
 			currentIndex: -1,
-			globalTotal: 0,
+		},
+		globalResults: {
+			totalMatches: 0,
+			tabResultsSummary: [],
 		},
 	}
 }
+
 function getOrCreateSession(tabId: number): LocalSearchSession {
 	const existing = coordinatorState.localSessions.get(tabId)
 
@@ -165,18 +170,46 @@ export function getTabResults(tabId: number): TabResults | undefined {
 	return coordinatorState.tabResults.get(tabId)
 }
 
-export function getGlobalTotalMatches() {
-	let total = 0
+export async function getGlobalResults(): Promise<
+	GlobalSearchSession["globalResults"]
+> {
+	let totalMatches = 0
+	const tabResultsSummary: TabResultsSummary[] = []
+	const tabs = await chrome.tabs.query({
+		windowType: "normal",
+		url: ["http://*/*", "https://*/*"],
+	})
 
-	for (const participant of coordinatorState.global.participants) {
-		const results = coordinatorState.tabResults.get(participant)
+	const participants = tabs.filter(
+		(tab) =>
+			tab.id !== undefined &&
+			coordinatorState.global.participants.has(tab.id)
+	)
 
-		if (results) {
-			total += results.totalMatches
+	for (const participant of participants) {
+		if (participant.id === undefined) {
+			continue
 		}
+
+		const results = coordinatorState.tabResults.get(participant.id)
+
+		if (!results) {
+			continue
+		}
+
+		totalMatches += results.totalMatches
+
+		tabResultsSummary.push({
+			tabId: participant.id,
+			tabName: participant.title ?? "Untitled",
+			totalMatches: results.totalMatches,
+		})
 	}
 
-	return total
+	return {
+		totalMatches,
+		tabResultsSummary,
+	}
 }
 
 export function removeGlobalParticipant(tabId: number) {
@@ -188,11 +221,11 @@ export function removeGlobalParticipant(tabId: number) {
 	}
 }
 
-export function syncGlobalParticipants(
+export async function syncGlobalParticipants(
 	session: GlobalSearchSession,
 	intent?: Intent["intent"]
-): void {
-	const globalTotal = getGlobalTotalMatches()
+): Promise<void> {
+	const globalResults = await getGlobalResults()
 
 	for (const participant of getSessionParticipants()) {
 		const tabSession = structuredClone(session)
@@ -201,10 +234,10 @@ export function syncGlobalParticipants(
 		if (tabResults) {
 			tabSession.results = {
 				...tabResults,
-				globalTotal,
 			}
+			tabSession.globalResults = globalResults
 		} else {
-			tabSession.results.globalTotal = globalTotal
+			tabSession.globalResults = globalResults
 		}
 
 		publishSession(participant, tabSession)

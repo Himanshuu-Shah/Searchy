@@ -2,9 +2,9 @@ import { useState } from "react"
 import type { SearchMode } from "../../../../../shared/messages/session/SearchSession"
 import { useSearchSession } from "../../../../session/useSearchSession"
 import Button from "../../../Button/Button"
-import "./SearchMode.css"
-import "../../../../styles/dropdown.css"
 import { updateModeIntent } from "../../../../sendIntent"
+import "../../../../styles/dropdown.css"
+import "./SearchMode.css"
 
 const SEARCH_MODE: {
 	id: SearchMode
@@ -38,7 +38,7 @@ export default function SearchModeSelector() {
 			</Button>
 
 			{isOpen && (
-				<ul className="dropdown" style={{ right: "10px" }}>
+				<ul className="dropdown searchModes">
 					{SEARCH_MODE.map((mode) => (
 						<li
 							key={mode.id}

@@ -1,0 +1,30 @@
+.globalResultsToggle {
+	position: absolute;
+	right: 1px;
+	top: 50%;
+	transform: translateY(-50%);
+
+	width: 20px;
+	height: 20px;
+	padding: 0;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	z-index: 10;
+}
+
+.globalResultsToggle:hover {
+	background-color: var(--searchy-background);
+	border: none;
+}
+
+.globalSearchResults {
+	width: 100%;
+}
+
+.globalSearchResults > li {
+	display: flex;
+	justify-content: space-between;
+}

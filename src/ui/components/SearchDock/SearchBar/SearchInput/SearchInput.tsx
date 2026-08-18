@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react"
 import { useDock } from "../../../../dock/useDock"
 import { useSearchSession } from "../../../../session/useSearchSession"
-import "./SearchInput.css"
 import { updateQueryIntent } from "../../../../sendIntent"
+import GlobalResults from "../GlobalResults/GlobalResults"
+import "./SearchInput.css"
 
 export default function SearchInput() {
 	const { session } = useSearchSession()
@@ -38,6 +39,7 @@ export default function SearchInput() {
 					updateQueryIntent(query)
 				}}
 			/>
+			<GlobalResults />
 		</form>
 	)
 }

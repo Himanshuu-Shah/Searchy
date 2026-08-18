@@ -11,6 +11,12 @@ export type RegexConfig = {
 	caseSensitive: boolean
 }
 
+export type TabResultsSummary = {
+	tabId: number
+	tabName: string
+	totalMatches: number
+}
+
 export type SearchSession = LocalSearchSession | GlobalSearchSession
 
 export type LocalSearchSession = {
@@ -48,6 +54,10 @@ export type GlobalSearchSession = {
 	results: {
 		totalMatches: number
 		currentIndex: number
-		globalTotal: number
+	}
+
+	globalResults: {
+		totalMatches: number
+		tabResultsSummary: TabResultsSummary[]
 	}
 }

@@ -2,7 +2,7 @@
 	background-color: var(--searchy-background);
 	border: none;
 	padding: 0 5px;
-	height: 30px;
+	height: var(--searchy-elements-height);
 
 	font-family: var(--searchy-font-family);
 	font-size: var(--searchy-font-size);

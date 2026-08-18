@@ -1,11 +1,24 @@
 .inputForm {
+	position: relative;
 	display: flex;
 	align-items: center;
+
 	margin: 0;
 	padding: 0;
+
+	height: var(--searchy-elements-height);
+	width: 250px;
 }
 
 .inputBox {
 	margin: 0;
-	padding: 0;
+	padding: 0 20px 0 8px;
+	box-sizing: border-box;
+	height: 100%;
+	width: 100%;
+}
+
+.inputBox:focus {
+	outline: none;
+	box-shadow: none;
 }

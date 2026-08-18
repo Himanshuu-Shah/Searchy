@@ -7,18 +7,18 @@ import type {
 } from "../shared/messages/response/response"
 import { publishSession } from "./publisher"
 import {
-	getGlobalTotalMatches,
+	getGlobalResults,
 	getTabResults,
 	resolveSession,
 	setTabResults,
 	syncGlobalParticipants,
 } from "./sessionManager"
 
-export function processEvent(
+export async function processEvent(
 	message: ContentScriptEvent,
 	tabId: number,
 	sendResponse: (response: Session | SuccessResponse | ErrorResponse) => void
-): void {
+): Promise<void> {
 	const session = resolveSession(tabId)
 
 	switch (message.event) {
@@ -59,8 +59,8 @@ export function processEvent(
 				const tabSession = structuredClone(session)
 				tabSession.results = {
 					...tabResults,
-					globalTotal: getGlobalTotalMatches(),
 				}
+				tabSession.globalResults = await getGlobalResults()
 
 				publishSession(tabId, tabSession)
 
