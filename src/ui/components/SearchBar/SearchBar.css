@@ -1,4 +1,4 @@
-.searchDock {
+.searchBar {
 	position: fixed;
 
 	display: flex;
@@ -12,9 +12,7 @@
 	right: 0;
 	bottom: 0;
 
-	z-index: 9000;
-}
+	margin: 0 10px;
 
-.searchDockHidden {
-	display: none;
+	z-index: 9000;
 }

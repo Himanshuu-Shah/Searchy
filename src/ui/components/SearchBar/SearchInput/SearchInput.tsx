@@ -1,13 +1,14 @@
 import { useEffect, useRef } from "react"
-import { useDock } from "../../../../dock/useDock"
-import { useSearchSession } from "../../../../session/useSearchSession"
-import { updateQueryIntent } from "../../../../sendIntent"
-import GlobalResults from "../GlobalResults/GlobalResults"
+import { useView } from "../../../view/useView"
+import { useSearchSession } from "../../../session/useSearchSession"
+import { updateQueryIntent } from "../../../sendIntent"
+import GlobalResultsToggle from "../../GlobalResults/GlobalResultsToggle"
+import GlobalSearchResults from "../../GlobalResults/GlobalSearchResults"
 import "./SearchInput.css"
 
 export default function SearchInput() {
 	const { session } = useSearchSession()
-	const { dockState } = useDock()
+	const { viewState } = useView()
 
 	const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -15,11 +16,11 @@ export default function SearchInput() {
 	// React runs this effect after committing the latest render,
 	// ensuring the input is visible before attempting to focus it.
 	useEffect(() => {
-		if (dockState.visible) {
+		if (viewState.searchyVisible) {
 			inputRef.current?.focus()
 			inputRef.current?.select()
 		}
-	}, [dockState.focusRequest])
+	}, [viewState.focusRequest])
 
 	return (
 		<form className="inputForm">
@@ -39,7 +40,8 @@ export default function SearchInput() {
 					updateQueryIntent(query)
 				}}
 			/>
-			<GlobalResults />
+			{session.mode === "global" && <GlobalResultsToggle />}
+			{viewState.globalResultsVisible && <GlobalSearchResults />}
 		</form>
 	)
 }

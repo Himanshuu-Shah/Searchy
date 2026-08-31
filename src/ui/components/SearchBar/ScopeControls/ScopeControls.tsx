@@ -1,9 +1,6 @@
-import {
-	clearSelectedScope,
-	toggleScopeSelection,
-} from "../../../../sendIntent"
-import { useSearchSession } from "../../../../session/useSearchSession"
-import Button from "../../../Button/Button"
+import { clearSelectedScope, toggleScopeSelection } from "../../../sendIntent"
+import { useSearchSession } from "../../../session/useSearchSession"
+import Button from "../../Button/Button"
 
 export function ScopeControls() {
 	const { session } = useSearchSession()

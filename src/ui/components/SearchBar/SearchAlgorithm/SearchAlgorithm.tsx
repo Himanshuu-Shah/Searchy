@@ -1,10 +1,10 @@
 import { useState } from "react"
-import type { SearchAlgorithm } from "../../../../../shared/messages/session/SearchSession"
-import { useSearchSession } from "../../../../session/useSearchSession"
-import Button from "../../../Button/Button"
+import type { SearchAlgorithm } from "../../../../shared/messages/session/SearchSession"
+import { useSearchSession } from "../../../session/useSearchSession"
+import Button from "../../Button/Button"
+import { updateAlgorithmIntent } from "../../../sendIntent"
 import "./SearchAlgorithm.css"
-import "../../../../styles/dropdown.css"
-import { updateAlgorithmIntent } from "../../../../sendIntent"
+import "../../../styles/dropdown.css"
 
 const SEARCH_ALGORITHMS: {
 	id: SearchAlgorithm

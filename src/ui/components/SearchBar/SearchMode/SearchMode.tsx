@@ -1,9 +1,9 @@
 import { useState } from "react"
-import type { SearchMode } from "../../../../../shared/messages/session/SearchSession"
-import { useSearchSession } from "../../../../session/useSearchSession"
-import Button from "../../../Button/Button"
-import { updateModeIntent } from "../../../../sendIntent"
-import "../../../../styles/dropdown.css"
+import type { SearchMode } from "../../../../shared/messages/session/SearchSession"
+import { useSearchSession } from "../../../session/useSearchSession"
+import Button from "../../Button/Button"
+import { updateModeIntent } from "../../../sendIntent"
+import "../../../styles/dropdown.css"
 import "./SearchMode.css"
 
 const SEARCH_MODE: {

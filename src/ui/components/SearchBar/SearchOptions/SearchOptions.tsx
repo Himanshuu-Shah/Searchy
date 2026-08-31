@@ -1,4 +1,4 @@
-import { useSearchSession } from "../../../../session/useSearchSession"
+import { useSearchSession } from "../../../session/useSearchSession"
 import { LiteralConfig } from "./SearchConfig/LiteralConfig"
 import { RegexConfig } from "./SearchConfig/RegexConfig"
 

@@ -1,9 +1,6 @@
-import {
-	navigateNextIntent,
-	navigatePreviousIntent,
-} from "../../../../sendIntent"
-import { useSearchSession } from "../../../../session/useSearchSession"
-import Button from "../../../Button/Button"
+import { navigateNextIntent, navigatePreviousIntent } from "../../../sendIntent"
+import { useSearchSession } from "../../../session/useSearchSession"
+import Button from "../../Button/Button"
 import "./Navigation.css"
 
 export default function Navigation() {

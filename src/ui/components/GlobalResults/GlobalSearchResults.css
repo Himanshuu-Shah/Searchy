@@ -1,0 +1,8 @@
+.globalSearchResults {
+	width: 100%;
+}
+
+.globalSearchResults > li {
+	display: flex;
+	justify-content: space-between;
+}

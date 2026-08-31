@@ -1,8 +1,8 @@
 import {
 	updateLiteralCaseSensitive,
 	updateLiteralWholeWord,
-} from "../../../../../sendIntent"
-import { useSearchSession } from "../../../../../session/useSearchSession"
+} from "../../../../sendIntent"
+import { useSearchSession } from "../../../../session/useSearchSession"
 
 export function LiteralConfig() {
 	const { session } = useSearchSession()

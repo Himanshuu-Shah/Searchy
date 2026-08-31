@@ -1,5 +1,5 @@
-import { updateRegexCaseSensitive } from "../../../../../sendIntent"
-import { useSearchSession } from "../../../../../session/useSearchSession"
+import { updateRegexCaseSensitive } from "../../../../sendIntent"
+import { useSearchSession } from "../../../../session/useSearchSession"
 
 export function RegexConfig() {
 	const { session } = useSearchSession()

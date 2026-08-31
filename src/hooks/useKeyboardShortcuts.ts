@@ -7,10 +7,10 @@
  */
 
 import { useEffect } from "react"
-import { useDock } from "../ui/dock/useDock"
+import { useView } from "../ui/view/useView"
 
 export function useKeyboardShortcuts() {
-	const { dockState, dockActions } = useDock()
+	const { viewState, viewActions } = useView()
 
 	/**
 	 * The handler closes over React state.
@@ -20,14 +20,14 @@ export function useKeyboardShortcuts() {
 	function handler(event: KeyboardEvent) {
 		if (event.ctrlKey && event.key.toLowerCase() === "f") {
 			event.preventDefault()
-			if (!dockState.visible) {
-				dockActions.show()
+			if (!viewState.searchyVisible) {
+				viewActions.show()
 			}
-			dockActions.requestFocus()
+			viewActions.requestFocus()
 		}
 
 		if (event.key === "Escape") {
-			dockActions.hide()
+			viewActions.hide()
 		}
 	}
 
@@ -37,5 +37,5 @@ export function useKeyboardShortcuts() {
 		return () => {
 			window.removeEventListener("keydown", handler)
 		}
-	}, [dockState.visible, dockActions])
+	}, [viewState.searchyVisible, viewActions])
 }

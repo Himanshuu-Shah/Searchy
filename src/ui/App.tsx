@@ -1,16 +1,22 @@
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts"
-import SearchDock from "./components/SearchDock/SearchDock"
-import { DockProvider } from "./dock/DockStateProvider"
+import { ViewProvider } from "./view/ViewStateProvider"
 import type { SearchSession } from "../shared/messages/session/SearchSession"
 import { SearchSessionProvider } from "./session/SearchSessionProvider"
+import { useView } from "./view/useView"
+import SearchBar from "./components/SearchBar/SearchBar"
 
 function SearchyApp() {
 	useKeyboardShortcuts()
+	const { viewState } = useView()
 
 	return (
-		<>
-			<SearchDock />
-		</>
+		<div
+			style={{
+				display: viewState.searchyVisible ? "block" : "none",
+			}}
+		>
+			<SearchBar />
+		</div>
 	)
 }
 
@@ -20,10 +26,10 @@ type prop = {
 
 export default function App({ initialSession }: prop) {
 	return (
-		<DockProvider>
+		<ViewProvider>
 			<SearchSessionProvider initialSession={initialSession}>
 				<SearchyApp />
 			</SearchSessionProvider>
-		</DockProvider>
+		</ViewProvider>
 	)
 }

@@ -1,5 +1,6 @@
-import { setActiveTab } from "../../../../sendIntent"
-import { useSearchSession } from "../../../../session/useSearchSession"
+import { setActiveTab } from "../../sendIntent"
+import { useSearchSession } from "../../session/useSearchSession"
+import "./GlobalSearchResults.css"
 
 export default function GlobalSearchResults() {
 	const { session } = useSearchSession()

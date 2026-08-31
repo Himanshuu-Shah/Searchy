@@ -19,12 +19,3 @@
 	background-color: var(--searchy-background);
 	border: none;
 }
-
-.globalSearchResults {
-	width: 100%;
-}
-
-.globalSearchResults > li {
-	display: flex;
-	justify-content: space-between;
-}

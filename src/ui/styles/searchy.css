@@ -1,14 +1,14 @@
 @import "./fonts.css";
 @import "./dropdown.css";
-@import "../components/SearchDock/SearchDock.css";
-@import "../components/SearchDock/SearchBar/SearchBar.css";
+@import "../components/SearchBar/SearchBar.css";
 @import "../components/Button/Button.css";
-@import "../components/SearchDock/SearchBar/SearchAlgorithm/SearchAlgorithm.css";
-@import "../components/SearchDock/SearchBar/SearchMode/SearchMode.css";
-@import "../components/SearchDock/SearchBar/SearchInput/SearchInput.css";
-@import "../components/SearchDock/SearchBar/Navigation/Navigation.css";
-@import "../components/SearchDock/SearchBar/SearchOptions/SearchOptions.css";
-@import "../components/SearchDock/SearchBar/GlobalResults/GlobalResults.css";
+@import "../components/SearchBar/SearchAlgorithm/SearchAlgorithm.css";
+@import "../components/SearchBar/SearchMode/SearchMode.css";
+@import "../components/SearchBar/SearchInput/SearchInput.css";
+@import "../components/SearchBar/Navigation/Navigation.css";
+@import "../components/SearchBar/SearchOptions/SearchOptions.css";
+@import "../components/SearchBar/GlobalResults/GlobalResultsToggle.css";
+@import "../components/SearchBar/GlobalResults/GlobalSearchResults.css";
 
 :host {
 	--searchy-height: 40px;

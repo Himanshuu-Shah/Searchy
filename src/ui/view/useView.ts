@@ -1,8 +1,8 @@
 import { useContext } from "react"
-import { DockContext } from "./DockContext"
+import { ViewContext } from "./ViewContext"
 
-export function useDock() {
-	const context = useContext(DockContext)
+export function useView() {
+	const context = useContext(ViewContext)
 
 	if (!context) {
 		throw new Error("useDock must be used within a DockProvider")
