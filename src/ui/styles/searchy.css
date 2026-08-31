@@ -7,8 +7,8 @@
 @import "../components/SearchBar/SearchInput/SearchInput.css";
 @import "../components/SearchBar/Navigation/Navigation.css";
 @import "../components/SearchBar/SearchOptions/SearchOptions.css";
-@import "../components/SearchBar/GlobalResults/GlobalResultsToggle.css";
-@import "../components/SearchBar/GlobalResults/GlobalSearchResults.css";
+@import "../components/GlobalResults/GlobalResultsToggle.css";
+@import "../components/GlobalResults/GlobalSearchResults.css";
 
 :host {
 	--searchy-height: 40px;
